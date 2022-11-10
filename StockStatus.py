@@ -35,7 +35,9 @@ from googleapiclient.discovery import build
 import os.path
 import base64
 import email
- 
+
+import yfinance as yf
+
 class StockStatusBot(object):
 	"""
 	class will scrape data from Imail Inbox after login
@@ -121,60 +123,6 @@ class StockStatusBot(object):
 		except Exception as e:
 			traceback.print_exc() 
 			print(str(e))
-			
-#		SCOPES = ['https://www.googleapis.com/auth/gmail.readonly','https://www.googleapis.com/auth/gmail.modify']
-# 		creds=None
-# 		if os.path.exists('token.json'):
-# 			creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-		
-# 		if not creds or not creds.valid:
-# 			if creds and creds.expired and creds.refresh_token:
-# 				creds.refresh(Request())
-# 			else:
-# 				flow = InstalledAppFlow.from_client_secrets_file('credentials_mike.json', SCOPES)
-# 				creds = flow.run_local_server(port=0)
-#         	# Save the credentials for the next run
-# 			with open('token.json', 'w') as token:
-# 				token.write(creds.to_json())
-
-
-# 		try:
-# 			creds = service_account.Credentials.from_service_account_file('credentials_mike.json', scopes=SCOPES)
-# 			service = build('gmail', 'v1', credentials=creds)
-# 			results = service.users().messages().list(userId='me', labelIds=['INBOX'], q="is:unread").execute()
-# 			messages = results.get('messages',[])
-# 			if not messages:
-# 				print('No new messages.')
-# 			else:
-# 				message_count = 0
-# 				for message in messages:
-# 					msg = service.users().messages().get(userId='me', id=message['id']).execute()                
-# 					email_data = msg['payload']['headers']
-# 					for values in email_data:
-# 						name = values['name']
-# 						if name == 'From':
-# 							from_name= values['value']                
-# 							for part in msg['payload']['parts']:
-# 								try:
-# 									data = part['body']["data"]
-# 									byte_code = base64.urlsafe_b64decode(data)
-
-# 									text = byte_code.decode("utf-8")
-# 									obj = re.findall(r'\w+://finviz.com/quote.ashx\?t=(\w+)',text)
-# 									self.stockSymbolList = obj
-# 									print(obj)
-# 									time.sleep(5)
-# 									break
-
-# 									# mark the message as read (optional)
-# 									msg  = service.users().messages().modify(userId='me', id=message['id'], body={'removeLabelIds': ['UNREAD']}).execute()                                                       
-# 								except BaseException as error:
-# 									pass                            
-# 		except Exception as error:
-# 			print(f'An error occurred: {error}')
-
-
-
 
 
 
@@ -203,60 +151,6 @@ class StockStatusBot(object):
 	def searchStatus(self, stockSymbolList):
 		infolist = []
 		all_ratings=[]
-
-
-# 		msg = MIMEText(mail_content, 'plain')
-# 		msg['From']   = self.MAIL_USERNAME
-# 		receivers = [self.MAIL_USERNAME]
-# 		s = smtplib.SMTP_SSL(host='smtp.mail.yahoo.com', port=587)
-# 		s.starttls()
-# 		s.login(self.MAIL_USERNAME, self.MAIL_PASSWORD)
-# 		s.sendmail(self.MAIL_USERNAME, self.RECEIVER_MAIL, msg.as_string())
-# 		s.quit()
-
-
-
-# 		# If modifying these scopes, delete the file token.json.
-# 		SCOPES = ['https://mail.google.com/']
-
-# 		creds = None
-# # 		if os.path.exists('token.json'):
-# # 			creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-# 		# If there are no (valid) credentials available, let the user log in.
-# 		if not creds or not creds.valid:
-# # 			if creds and creds.expired and creds.refresh_token:
-# # 				creds.refresh(Request())
-# # 			else:
-# 			flow = InstalledAppFlow.from_client_secrets_file('/app/credentials.json', SCOPES)
-# 			creds = flow.run_local_server(port=0)
-# 			# Save the credentials for the next run
-# 			with open('token.json', 'w') as token:
-# 				token.write(creds.to_json())
-
-
-# 		service = build('gmail', 'v1', credentials=creds)
-
-
-# 		def create_message(sender, to, subject, message_text):
-# 			message = MIMEText(message_text)
-# 			message['to'] = to
-# 			message['from'] = sender
-# 			message['subject'] = subject
-# 			return {'raw': base64.urlsafe_b64encode(message.as_string().encode()).decode()}
-
-
-# 		def send_message(service, user_id, message):
-# 			try:
-# 				message = (service.users().messages().send(userId=user_id, body=message)
-# 						.execute())
-# 				print('Message Id: %s' % message['id'])
-# 				return message
-# 			except Exception as error:
-# 				print(error)
-
-
-# 		message = create_message('me', 'nijathkm@gmail.com', 'hello', mail_content)
-# 		print(send_message(service=service, user_id='me', message=message))
 		infolist.append(1)
 		if infolist!=[]:
 			print('___entered if block___')
@@ -278,5 +172,65 @@ class StockStatusBot(object):
 
 
 		print("=======")
+
+	def Supertrend(df, atr_period, multiplier):
+		
+		high = df['High']
+		low = df['Low']
+		close = df['Close']
+		
+		# calculate ATR
+		price_diffs = [high - low, 
+					high - close.shift(), 
+					close.shift() - low]
+		true_range = pd.concat(price_diffs, axis=1)
+		true_range = true_range.abs().max(axis=1)
+		# default ATR calculation in supertrend indicator
+		atr = true_range.ewm(alpha=1/atr_period,min_periods=atr_period).mean() 
+		# df['atr'] = df['tr'].rolling(atr_period).mean()
+		
+		# HL2 is simply the average of high and low prices
+		hl2 = (high + low) / 2
+		# upperband and lowerband calculation
+		# notice that final bands are set to be equal to the respective bands
+		final_upperband = upperband = hl2 + (multiplier * atr)
+		final_lowerband = lowerband = hl2 - (multiplier * atr)
+		
+		# initialize Supertrend column to True
+		supertrend = [True] * len(df)
+		
+		for i in range(1, len(df.index)):
+			curr, prev = i, i-1
+			
+			# if current close price crosses above upperband
+			if close[curr] > final_upperband[prev]:
+				supertrend[curr] = True
+			# if current close price crosses below lowerband
+			elif close[curr] < final_lowerband[prev]:
+				supertrend[curr] = False
+			# else, the trend continues
+			else:
+				supertrend[curr] = supertrend[prev]
+				
+				# adjustment to the final bands
+				if supertrend[curr] == True and final_lowerband[curr] < final_lowerband[prev]:
+					final_lowerband[curr] = final_lowerband[prev]
+				if supertrend[curr] == False and final_upperband[curr] > final_upperband[prev]:
+					final_upperband[curr] = final_upperband[prev]
+
+			# to remove bands according to the trend direction
+			if supertrend[curr] == True:
+				final_upperband[curr] = np.nan
+			else:
+				final_lowerband[curr] = np.nan
+		
+		return pd.DataFrame({
+			'Supertrend': supertrend,
+			'Final Lowerband': final_lowerband,
+			'Final Upperband': final_upperband
+		}, index=df.index)
+
+
+
 
 bet = StockStatusBot(Config())
