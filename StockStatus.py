@@ -84,7 +84,7 @@ class StockStatusBot(object):
 		
 		ORG_EMAIL = "@gmail.com" 
 		FROM_EMAIL = "high.risk.stocks" + ORG_EMAIL 
-		FROM_PWD = "Maykhartman1992!" 
+		FROM_PWD = "Maykhart1992!" 
 		SMTP_SERVER = "imap.gmail.com"
 
 		# Use the client_secret.json file to identify the application requesting
@@ -268,7 +268,7 @@ class StockStatusBot(object):
 			msg['To'] = ", ".join(recipients)
 			# Send the message via our own SMTP server.
 			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-			server.login("high.risk.stocks@gmail.com", "Maykhartman1992!")
+			server.login("high.risk.stocks@gmail.com", "Maykhart1992!")
 			print("SUCCESS at log into high.risk.stocks")
 			#server.send_message(msg)
 			
