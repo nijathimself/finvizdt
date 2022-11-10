@@ -1,4 +1,3 @@
-print("STARTTTTTT")
 from config import Config
 from StockStatus import StockStatusBot
 from celery import Celery
