@@ -1,3 +1,4 @@
+print("STARTTTTTT")
 from config import Config
 from StockStatus import StockStatusBot
 from celery import Celery
@@ -6,7 +7,7 @@ import os
 
 app = Celery('tasks', broker='redis://localhost:6379/0')
 
-print("STARTTTTTT")
+
 
 @app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
