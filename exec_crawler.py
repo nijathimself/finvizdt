@@ -6,6 +6,7 @@ import os
 
 app = Celery('tasks', broker='redis://localhost:6379/0')
 
+print("STARTTTTTT")
 
 @app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
