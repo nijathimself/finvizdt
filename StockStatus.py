@@ -203,36 +203,7 @@ class StockStatusBot(object):
 	def searchStatus(self, stockSymbolList):
 		infolist = []
 		all_ratings=[]
-		for stockSymbol in stockSymbolList:
-			searchBox = self.driver.find_element_by_xpath('//*[@id="app_search_bar"]')
-			searchBox.send_keys(stockSymbol)
-			goSearchButton = self.driver.find_elements_by_xpath('//*[@id="app_search_submit_btn"]')
-			goSearchButton[0].click()
-			time.sleep(5)
-			getOverallRisk = self.driver.find_elements_by_xpath('//*[@id="dashContentWrapper"]/div[2]/div[1]/span[2]')
-			if getOverallRisk:
-				status_text = getOverallRisk[0].text
-				stock_symbol = stockSymbol
-				
-				soup=BeautifulSoup(self.driver.page_source, 'html.parser')
-				ratings_list=soup.find_all("div",{"class":"dilutionRatingSingleWrapper"})
-				all_ratings=[]
-				for rating in ratings_list:
-					rating=rating.text
-					last_capital=[idx for idx in range(len(rating)) if rating[idx].isupper()][-1]
-					rating=rating[last_capital:]
-					all_ratings.append(rating)
-				print(all_ratings)
-				if all(x=='High' for x in all_ratings):
-					infolist.append({'symbol':stock_symbol,'status':'High'})
-				else:
-					all_ratings=[]
-			else:
-				all_ratings=[]
-				pass
-		mail_content = "Stock Symbol   Overall Risk\n"
-		for info in infolist:
-			mail_content += f"{info.get('symbol')}    :    {info.get('status')}\n"
+
 
 # 		msg = MIMEText(mail_content, 'plain')
 # 		msg['From']   = self.MAIL_USERNAME
@@ -297,7 +268,7 @@ class StockStatusBot(object):
 			msg['To'] = ", ".join(recipients)
 			# Send the message via our own SMTP server.
 			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-			server.login("high.risk.stocks@gmail.com", "sezbjeayolssbrrx")
+			server.login("high.risk.stocks@gmail.com", "Maykhartman1992!")
 			print("SUCCESS at log into high.risk.stocks")
 			#server.send_message(msg)
 			
