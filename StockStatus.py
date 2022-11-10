@@ -54,7 +54,7 @@ class StockStatusBot(object):
 		#self.loginWithMail()
 		self.mailLoginWithSelenium()
 		self.loginWithTracker()
-		self.searchStatus(self.stockSymbolList)
+		#self.searchStatus(self.stockSymbolList)
 
 	def loginWithMail(self):
 		imap = imaplib.IMAP4_SSL(self.IMAP_SERVER)
@@ -298,7 +298,8 @@ class StockStatusBot(object):
 			# Send the message via our own SMTP server.
 			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
 			server.login("high.risk.stocks@gmail.com", "sezbjeayolssbrrx")
-			server.send_message(msg)
+			print("SUCCESS at log into high.risk.stocks")
+			#server.send_message(msg)
 			
 			print('___exited if block___')
 			
