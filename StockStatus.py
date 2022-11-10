@@ -257,7 +257,7 @@ class StockStatusBot(object):
 
 # 		message = create_message('me', 'nijathkm@gmail.com', 'hello', mail_content)
 # 		print(send_message(service=service, user_id='me', message=message))
-		
+		infolist.append(1)
 		if infolist!=[]:
 			print('___entered if block___')
 			msg = EmailMessage()
