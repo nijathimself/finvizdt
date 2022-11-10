@@ -268,7 +268,7 @@ class StockStatusBot(object):
 			msg['To'] = ", ".join(recipients)
 			# Send the message via our own SMTP server.
 			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-			server.login("high.risk.stocks@gmail.com", "Maykhart1992!")
+			server.login("high.risk.stocks@gmail.com", "gnxzvixizpfqdhhj")
 			print("SUCCESS at log into high.risk.stocks")
 			#server.send_message(msg)
 			
