@@ -116,6 +116,7 @@ class StockStatusBot(object):
 								self.stockSymbolList.append(obj[i])
 			mail.store(mail_ids.decode('utf-8').replace(' ',','),'+FLAGS','\Seen')
 			print('All ticks are copied')
+			print(self.stockSymbolList)
 				
 		except Exception as e:
 			traceback.print_exc() 
