@@ -84,7 +84,7 @@ class StockStatusBot(object):
 		
 		ORG_EMAIL = "@gmail.com" 
 		FROM_EMAIL = "high.risk.stocks" + ORG_EMAIL 
-		FROM_PWD = "Maykhart1992!" 
+		FROM_PWD = "gnxzvixizpfqdhhj" 
 		SMTP_SERVER = "imap.gmail.com"
 
 		# Use the client_secret.json file to identify the application requesting
