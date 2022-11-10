@@ -54,7 +54,7 @@ class StockStatusBot(object):
 		#self.loginWithMail()
 		self.mailLoginWithSelenium()
 		self.loginWithTracker()
-		#self.searchStatus(self.stockSymbolList)
+		self.searchStatus(self.stockSymbolList)
 
 	def loginWithMail(self):
 		imap = imaplib.IMAP4_SSL(self.IMAP_SERVER)
