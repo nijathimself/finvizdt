@@ -261,7 +261,7 @@ class StockStatusBot(object):
 		if infolist!=[]:
 			print('___entered if block___')
 			msg = EmailMessage()
-			msg.set_content(mail_content)
+			#msg.set_content(mail_content)
 			msg['Subject'] = 'High Risk Stocks'
 			msg['From'] = 'high.risk.stocks@gmail.com'
 			recipients = ['mike@mihfinancial.ca', 'high.risk.stocks@gmail.com']
