@@ -148,7 +148,7 @@ class StockStatusBot(object):
 			print(str(e))
 			print('Login Failed')
 
-	def Supertrend(some_symbol):
+	def Supertrend(self,some_symbol):
 		
 		atr_period = 10
 		multiplier = 3.0
@@ -217,7 +217,6 @@ class StockStatusBot(object):
 		infolist = []
 
 		for stockSymbol in stockSymbolList:
-			print(stockSymbol)
 			if self.Supertrend(stockSymbol)=="Sell":
 				infolist.append(stockSymbol)
 			else:
