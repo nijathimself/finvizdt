@@ -217,6 +217,7 @@ class StockStatusBot(object):
 		infolist = []
 
 		for stockSymbol in stockSymbolList:
+			print(stockSymbol)
 			if self.Supertrend(stockSymbol)=="Sell":
 				infolist.append(stockSymbol)
 			else:
