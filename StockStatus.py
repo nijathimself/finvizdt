@@ -13,7 +13,7 @@ import traceback
 from bs4 import BeautifulSoup
 import pandas as pd
 from config import Config
-
+import numpy as np
 from dotenv import load_dotenv
 load_dotenv()
 
