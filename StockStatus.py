@@ -159,7 +159,7 @@ class StockStatusBot(object):
 		username = 'emingarayevemin'
 		password = 'Maykhart1992!'
 		tv = TvDatafeed(username, password)
-		df=tv.get_hist(symbol="ARCKW", exchange='NASDAQ', interval = Interval.in_weekly, n_bars=100)
+		df=tv.get_hist(symbol="ARCKW", exchange='NASDAQ', interval = Interval.in_daily, n_bars=100)
 		high = df['high']
 		low = df['low']
 		close = df['close']
