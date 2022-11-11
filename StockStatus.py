@@ -42,9 +42,7 @@ class StockStatusBot(object):
 	"""
 	class will scrape data from Imail Inbox after login
 	"""
-	username = 'emingarayevemin'
-	password = 'Maykhart1992!'
-	tv = TvDatafeed(username, password)
+
 	
 	def __init__(self, conf,data_center=None):
 		super(StockStatusBot, self).__init__()
@@ -158,6 +156,9 @@ class StockStatusBot(object):
 		multiplier = 3.0
 
 		#df = yf.download(some_symbol, start='2022-03-11', end='2022-11-11', interval="1wk")
+		username = 'emingarayevemin'
+		password = 'Maykhart1992!'
+		tv = TvDatafeed(username, password)
 		df=tv.get_hist(symbol="ARCKW", exchange='NASDAQ', interval = Interval.in_weekly, n_bars=10)
 		high = df['high']
 		low = df['low']
