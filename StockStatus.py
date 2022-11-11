@@ -211,9 +211,9 @@ class StockStatusBot(object):
 				supertrend_signal="Buy"
 			else:
 				supertrend_signal=""
-		else:
+		except:
 			print(some_symbol)
-			
+
 		return supertrend_signal
 
 	def searchStatus(self, stockSymbolList):
