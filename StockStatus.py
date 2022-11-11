@@ -148,33 +148,12 @@ class StockStatusBot(object):
 			print(str(e))
 			print('Login Failed')
 
-	def searchStatus(self, stockSymbolList):
-		infolist = []
-		all_ratings=[]
-		infolist.append(1)
-		if infolist!=[]:
-			print('___entered if block___')
-			msg = EmailMessage()
-			#msg.set_content(mail_content)
-			msg['Subject'] = 'High Risk Stocks'
-			msg['From'] = 'high.risk.stocks@gmail.com'
-			recipients = ['mike@mihfinancial.ca', 'high.risk.stocks@gmail.com']
-			msg['To'] = ", ".join(recipients)
-			# Send the message via our own SMTP server.
-			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-			server.login("high.risk.stocks@gmail.com", "gnxzvixizpfqdhhj")
-			print("SUCCESS at log into high.risk.stocks")
-			#server.send_message(msg)
-			
-			print('___exited if block___')
-			
-			server.quit()
-
-
-		print("=======")
-
-	def Supertrend(df, atr_period, multiplier):
+	def Supertrend(some_symbol):
 		
+		atr_period = 10
+		atr_multiplier = 3.0
+
+		df = yf.download(some_symbol, start='2022-09-11', end='2022-11-11', interval="1wk")
 		high = df['High']
 		low = df['Low']
 		close = df['Close']
@@ -224,13 +203,58 @@ class StockStatusBot(object):
 			else:
 				final_lowerband[curr] = np.nan
 		
-		return pd.DataFrame({
-			'Supertrend': supertrend,
-			'Final Lowerband': final_lowerband,
-			'Final Upperband': final_upperband
-		}, index=df.index)
+		supertrend_signal=""
+		if np.isnan(final_lowerband[-1]) \
+		and np.isnan(final_lowerband[-2]) \ 
+		and np.isnan(final_lowerband[-3]) \
+		and not np.isnan(final_upperband[-1]) \
+		and not np.isnan(final_upperband[-2]) \
+		and not np.isnan(final_upperband[-3]):
+			supertrend_signal="Sell"
+		elif not np.isnan(final_lowerband[-1]) \
+		and not np.isnan(final_lowerband[-2]) \ 
+		and not np.isnan(final_lowerband[-3]) \
+		and np.isnan(final_upperband[-1]) \
+		and np.isnan(final_upperband[-2]) \
+		and np.isnan(final_upperband[-3]):
+			supertrend_signal="Buy"
+		else:
+			supertrend_signal=""
+
+		return supertrend_signal
+
+	def searchStatus(self, stockSymbolList):
+		infolist = []
+
+		for stockSymbol in stockSymbolList:
+			if Supertrend(stockSymbol)=="Sell":
+				infolist.append(stockSymbol)
+			else:
+				continue
+
+		if infolist!=[]:
+			mail_content = "Stock Symbol   Overall Risk\n"
+			for sym in infolist:
+				mail_content += f"{sym}\n"
+			print('___entered if block___')
+			msg = EmailMessage()
+			#msg.set_content(mail_content)
+			msg['Subject'] = 'High Risk Stocks'
+			msg['From'] = 'high.risk.stocks@gmail.com'
+			recipients = ['mike@mihfinancial.ca', 'high.risk.stocks@gmail.com']
+			msg['To'] = ", ".join(recipients)
+			# Send the message via our own SMTP server.
+			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+			server.login("high.risk.stocks@gmail.com", "gnxzvixizpfqdhhj")
+			print("SUCCESS at log into high.risk.stocks")
+			#server.send_message(msg)
+			
+			print('___exited if block___')
+			
+			server.quit()
 
 
+		print("=======")
 
 
 bet = StockStatusBot(Config())
