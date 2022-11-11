@@ -48,3 +48,4 @@ webdriver-manager==3.4.2
 wrapt==1.14.1
 zipp==3.6.0
 yfinance==0.1.85
+tvdatafeed==2.1.0
