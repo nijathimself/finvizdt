@@ -16,7 +16,7 @@ from config import Config
 import numpy as np
 from dotenv import load_dotenv
 load_dotenv()
-
+from tvDatafeed import TvDatafeed, Interval
 import imaplib
 import smtplib
 
@@ -42,6 +42,10 @@ class StockStatusBot(object):
 	"""
 	class will scrape data from Imail Inbox after login
 	"""
+	username = 'emingarayevemin'
+	password = 'Maykhart1992!'
+	tv = TvDatafeed(username, password)
+	
 	def __init__(self, conf,data_center=None):
 		super(StockStatusBot, self).__init__()
 		self.stockSymbolList = []
@@ -153,10 +157,11 @@ class StockStatusBot(object):
 		atr_period = 10
 		multiplier = 3.0
 
-		df = yf.download(some_symbol, start='2022-03-11', end='2022-11-11', interval="1wk")
-		high = df['High']
-		low = df['Low']
-		close = df['Close']
+		#df = yf.download(some_symbol, start='2022-03-11', end='2022-11-11', interval="1wk")
+		df=tv.get_hist(symbol="ARCKW", exchange='NASDAQ', interval = Interval.in_weekly, n_bars=10)
+		high = df['high']
+		low = df['low']
+		close = df['close']
 		
 		# calculate ATR
 		price_diffs = [high - low, 
