@@ -151,9 +151,9 @@ class StockStatusBot(object):
 	def Supertrend(some_symbol):
 		
 		atr_period = 10
-		atr_multiplier = 3.0
+		multiplier = 3.0
 
-		df = yf.download(some_symbol, start='2022-09-11', end='2022-11-11', interval="1wk")
+		df = yf.download(some_symbol, start='2022-03-11', end='2022-11-11', interval="1wk")
 		high = df['High']
 		low = df['Low']
 		close = df['Close']
