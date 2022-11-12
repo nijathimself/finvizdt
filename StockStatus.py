@@ -228,7 +228,7 @@ class StockStatusBot(object):
 		for stockSymbol in stockSymbolList:
 			sgn=self.Supertrend(stockSymbol)
 			print(stockSymbol, end = ' ')
-			print(ssgn)
+			print(sgn)
 			if sgn=="Sell":
 				infolist.append(stockSymbol)
 			else:
