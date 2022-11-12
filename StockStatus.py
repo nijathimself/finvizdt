@@ -150,7 +150,7 @@ class StockStatusBot(object):
 			print(str(e))
 			print('Login Failed')
 
-	def Supertrend(self,some_symbol):
+	def Supertrend(self,some_symbol,intrval):
 		
 		atr_period = 10
 		multiplier = 3.0
@@ -160,7 +160,20 @@ class StockStatusBot(object):
 		password = 'Maykhart1992!'
 		tv = TvDatafeed(username, password)
 		exch=tv.search_symbol(some_symbol)[0]['exchange']
-		df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_daily, n_bars=200)
+
+		if intrval=="4hr":
+			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_4_hour, n_bars=200, extended_session=True)
+		elif intrval=="1d":
+			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_daily, n_bars=200, extended_session=False)
+		elif intrval=="1w":
+			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_weekly, n_bars=200, extended_session=False)
+		elif intrval=="10weeks":
+			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_daily, n_bars=200, extended_session=False)
+			logic = {'open'  : 'first', 'high'  : 'max', 'low'   : 'min', 'close' : 'last', 'volume': 'sum'}
+			df = df.resample('10W').apply(logic)
+		
+		
+		
 		high = df['high']
 		low = df['low']
 		close = df['close']
@@ -227,10 +240,18 @@ class StockStatusBot(object):
 		infolist = []
 
 		for stockSymbol in stockSymbolList:
-			sgn=self.Supertrend(stockSymbol)
+			signal_4hr=self.Supertrend(stockSymbol,"4hr")
+			signal_1d=self.Supertrend(stockSymbol,"1d")
+			signal_1w=self.Supertrend(stockSymbol,"1w")
+			signal_10weeks=self.Supertrend(stockSymbol,"10weeks")
+
 			print(stockSymbol, end = ' ')
-			print(sgn)
-			if sgn=="Sell":
+			print(signal_4hr, end = ' ')
+			print(signal_1d, end = ' ')
+			print(signal_1w, end = ' ')
+			print(signal_10weeks)
+			
+			if signal_4hr=="Sell" or signal_1d=="Sell" or signal_1w="Sell" or signal_10weeks=="Sell":
 				infolist.append(stockSymbol)
 			else:
 				continue
