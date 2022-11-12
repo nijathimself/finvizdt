@@ -239,6 +239,9 @@ class StockStatusBot(object):
 	def searchStatus(self, stockSymbolList):
 		infolist = []
 
+		if stockSymbolList!=[]:
+			stockSymbolList=list(set(stockSymbolList))
+
 		for stockSymbol in stockSymbolList:
 			signal_4hr=self.Supertrend(stockSymbol,"4hr")
 			signal_1d=self.Supertrend(stockSymbol,"1d")
@@ -257,6 +260,7 @@ class StockStatusBot(object):
 				continue
 
 		if infolist!=[]:
+			infolist=list(set(infolist))
 			mail_content = "Stock Symbol\n"
 			for sym in infolist:
 				mail_content += f"{sym}\n"
