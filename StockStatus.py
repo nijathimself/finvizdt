@@ -230,7 +230,7 @@ class StockStatusBot(object):
 			elif not np.isnan(final_lowerband[-1]) and not np.isnan(final_lowerband[-2]) and not np.isnan(final_lowerband[-3]) and np.isnan(final_upperband[-1]) and np.isnan(final_upperband[-2]) and np.isnan(final_upperband[-3]):
 				supertrend_signal="Buy"
 			else:
-				supertrend_signal=""
+				supertrend_signal="Mixed"
 		except:
 			print(some_symbol)
 
