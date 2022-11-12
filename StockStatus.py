@@ -227,14 +227,15 @@ class StockStatusBot(object):
 
 		for stockSymbol in stockSymbolList:
 			sgn=self.Supertrend(stockSymbol)
-			print(sgn)
+			print(stockSymbol, end = ' ')
+			print(ssgn)
 			if sgn=="Sell":
 				infolist.append(stockSymbol)
 			else:
 				continue
 
 		if infolist!=[]:
-			mail_content = "Stock Symbol   Overall Risk\n"
+			mail_content = "Stock Symbol\n"
 			for sym in infolist:
 				mail_content += f"{sym}\n"
 			print('___entered if block___')
