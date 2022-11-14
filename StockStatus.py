@@ -243,10 +243,22 @@ class StockStatusBot(object):
 			stockSymbolList=list(set(stockSymbolList))
 
 		for stockSymbol in stockSymbolList:
-			signal_4hr=self.Supertrend(stockSymbol,"4hr")
-			signal_1d=self.Supertrend(stockSymbol,"1d")
-			signal_1w=self.Supertrend(stockSymbol,"1w")
-			signal_10weeks=self.Supertrend(stockSymbol,"10weeks")
+			try:
+				signal_4hr=self.Supertrend(stockSymbol,"4hr")
+			except:
+				signal_4hr=""
+			try:
+				signal_1d=self.Supertrend(stockSymbol,"1d")
+			except:
+				signal_1d=""
+			try:
+				signal_1w=self.Supertrend(stockSymbol,"1w")
+			except:
+				signal_1w=""
+			try:
+				signal_10weeks=self.Supertrend(stockSymbol,"10weeks")
+			except:
+				signal_10weeks=""
 
 			print(stockSymbol, end = ' ')
 			print(signal_4hr, end = ' ')
