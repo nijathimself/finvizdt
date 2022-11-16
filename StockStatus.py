@@ -154,12 +154,26 @@ class StockStatusBot(object):
 		
 		atr_period = 10
 		multiplier = 3.0
+		american=["NASDAQ", "NYSE", "Arca", "OTC", "DJ", "SP", "CBOE", "CBOT", "CME GLOBEX", "COMEX", "NYMEX", "ICEUS", "FairX", "ECONOMY"]
 
 		#df = yf.download(some_symbol, start='2022-03-11', end='2022-11-11', interval="1wk")
 		username = 'emingarayevemin'
 		password = 'Maykhart1992!'
 		tv = TvDatafeed(username, password)
 		exch=tv.search_symbol(some_symbol)[0]['exchange']
+
+		if len(set(exch.split()).intersection(set(american)))==0:
+			for i in range(len(tv.search_symbol(some_symbol))):
+				try:
+					exch=tv.search_symbol('BEST')[i]['exchange']
+					if exch in american:
+						break
+					else:
+						continue
+				except:
+					print('No American stock found')
+					continue
+
 
 		if intrval=="4hr":
 			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_4_hour, n_bars=200, extended_session=True)
@@ -173,10 +187,17 @@ class StockStatusBot(object):
 			df = df.resample('10W').apply(logic)
 		
 		
-		
-		high = df['high']
-		low = df['low']
-		close = df['close']
+		try:
+			high = df['high']
+			low = df['low']
+			close = df['close']
+		except:
+			df=yf.download(some_symbol, interval='1wk', period='2y')
+			high = df['High']
+			low = df['Low']
+			close = df['Close']
+
+
 		
 		# calculate ATR
 		price_diffs = [high - low, 
@@ -226,6 +247,8 @@ class StockStatusBot(object):
 		supertrend_signal=""
 		try:
 			if np.isnan(final_lowerband[-1]) and np.isnan(final_lowerband[-2]) and np.isnan(final_lowerband[-3])  and not np.isnan(final_lowerband[-4]) and not np.isnan(final_upperband[-1]) and not np.isnan(final_upperband[-2]) and not np.isnan(final_upperband[-3]) and np.isnan(final_upperband[-4]):
+				supertrend_signal="Sell"
+			elif (not np.isnan(final_upperband[-1]) and np.isnan(final_upperband[-2]) and not np.isnan(final_lowerband[-2])) or (not np.isnan(final_upperband[-2]) and np.isnan(final_upperband[-3]) and not np.isnan(final_lowerband[-3])) or (not np.isnan(final_upperband[-3]) and np.isnan(final_upperband[-4]) and not np.isnan(final_lowerband[-4])):
 				supertrend_signal="Sell"
 			elif not np.isnan(final_lowerband[-1]) and not np.isnan(final_lowerband[-2]) and not np.isnan(final_lowerband[-3]) and np.isnan(final_lowerband[-4]) and np.isnan(final_upperband[-1]) and np.isnan(final_upperband[-2]) and np.isnan(final_upperband[-3]) and not np.isnan(final_upperband[-4]):
 				supertrend_signal="Buy"
