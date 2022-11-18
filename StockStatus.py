@@ -288,8 +288,8 @@ class StockStatusBot(object):
 			print(signal_1d, end = ' ')
 			print(signal_1w, end = ' ')
 			print(signal_10weeks)
-
-			if signal_4hr=="Sell" or signal_1d=="Sell" or signal_1w=="Sell" or signal_10weeks=="Sell" or stockSymbol=='SATX':
+			#signal_4hr=="Sell" or
+			if  signal_1d=="Sell" or signal_1w=="Sell" or signal_10weeks=="Sell" or stockSymbol=='SATX':
 				infolist.append(stockSymbol)
 			else:
 				continue
