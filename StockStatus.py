@@ -180,7 +180,7 @@ class StockStatusBot(object):
 		elif intrval=="1d":
 			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_daily, n_bars=200, extended_session=False)
 		elif intrval=="1w":
-			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_weekly, n_bars=200, extended_session=False)
+			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_weekly, n_bars=50, extended_session=False)
 		elif intrval=="10weeks":
 			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_daily, n_bars=200, extended_session=False)
 			logic = {'open'  : 'first', 'high'  : 'max', 'low'   : 'min', 'close' : 'last', 'volume': 'sum'}
@@ -192,7 +192,7 @@ class StockStatusBot(object):
 			low = df['low']
 			close = df['close']
 		except:
-			df=yf.download(some_symbol, interval='1wk', period='2y')
+			df=yf.download(some_symbol, interval='1wk', period='1y')
 			high = df['High']
 			low = df['Low']
 			close = df['Close']
@@ -289,7 +289,7 @@ class StockStatusBot(object):
 			print(signal_1w, end = ' ')
 			print(signal_10weeks)
 			#signal_4hr=="Sell" or
-			if  signal_1d=="Sell" or signal_1w=="Sell" or signal_10weeks=="Sell" or stockSymbol=='SATX':
+			if  signal_1d=="Sell" or signal_1w=="Sell" or signal_10weeks=="Sell":
 				infolist.append(stockSymbol)
 			else:
 				continue
