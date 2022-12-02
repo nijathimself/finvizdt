@@ -261,6 +261,8 @@ class StockStatusBot(object):
 
 	def searchStatus(self, stockSymbolList):
 		infolist = []
+		infolist2=[]
+		docfile_list=["BIOL", "ELYS", "VIVE", "BIVI", "GROM", "BXRX", "DBGI", "ONCS", "WISA", "CYTH", "REVB", "REED", "ENSC", "TIVC", "VS", "PTE", "BVXV", "TOPS", "CEMI", "OP", "MRM", "DRMA", "TROO", "BTOG", "CREG"]
 
 		if stockSymbolList!=[]:
 			stockSymbolList=list(set(stockSymbolList))
@@ -282,6 +284,11 @@ class StockStatusBot(object):
 				signal_10weeks=self.Supertrend(stockSymbol,"10weeks")
 			except:
 				signal_10weeks=""
+			try:
+				if stockSymbol in docfile_list:
+					infolist2.append(stockSymbol)
+			except:
+				pass
 
 			print(stockSymbol, end = ' ')
 			print(signal_4hr, end = ' ')
@@ -313,6 +320,28 @@ class StockStatusBot(object):
 			server.send_message(msg)
 			
 			print('___exited if block___')
+			
+			server.quit()
+		
+		if infolist2!=[]:
+			infolist2=list(set(infolist2))
+			mail_content = "Stock Symbol\n"
+			for sym in infolist2:
+				mail_content += f"{sym}\n"
+			print('___entered if block___')
+			msg = EmailMessage()
+			msg.set_content(mail_content)
+			msg['Subject'] = 'Cross referenced with doc file'
+			msg['From'] = 'high.risk.stocks@gmail.com'
+			recipients = ['high.risk.stocks@gmail.com', 'mike@mihfinancial.ca']
+			msg['To'] = ", ".join(recipients)
+			# Send the message via our own SMTP server.
+			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+			server.login("high.risk.stocks@gmail.com", "gnxzvixizpfqdhhj")
+			print("SUCCESS2 at log into high.risk.stocks")
+			server.send_message(msg)
+			
+			print('___exited if block2___')
 			
 			server.quit()
 
