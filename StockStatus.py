@@ -197,60 +197,95 @@ class StockStatusBot(object):
 			low = df['Low']
 			close = df['Close']
 
-
+		lookback=10
+		multiplier=3
+		# ATR
+		tr1 = pd.DataFrame(high - low)
+		tr2 = pd.DataFrame(abs(high - close.shift(1)))
+		tr3 = pd.DataFrame(abs(low - close.shift(1)))
+		frames = [tr1, tr2, tr3]
+		tr = pd.concat(frames, axis = 1, join = 'inner').max(axis = 1)
+		atr = tr.ewm(lookback).mean()
 		
-		# calculate ATR
-		price_diffs = [high - low, 
-					high - close.shift(), 
-					close.shift() - low]
-		true_range = pd.concat(price_diffs, axis=1)
-		true_range = true_range.abs().max(axis=1)
-		# default ATR calculation in supertrend indicator
-		atr = true_range.ewm(alpha=1/atr_period,min_periods=atr_period).mean() 
-		# df['atr'] = df['tr'].rolling(atr_period).mean()
+		# H/L AVG AND BASIC UPPER & LOWER BAND
 		
-		# HL2 is simply the average of high and low prices
-		hl2 = (high + low) / 2
-		# upperband and lowerband calculation
-		# notice that final bands are set to be equal to the respective bands
-		final_upperband = upperband = hl2 + (multiplier * atr)
-		final_lowerband = lowerband = hl2 - (multiplier * atr)
+		hl_avg = (high + low) / 2
+		upper_band = (hl_avg + multiplier * atr).dropna()
+		lower_band = (hl_avg - multiplier * atr).dropna()
 		
-		# initialize Supertrend column to True
-		supertrend = [True] * len(df)
+		# FINAL UPPER BAND
 		
-		for i in range(1, len(df.index)):
-			curr, prev = i, i-1
-			
-			# if current close price crosses above upperband
-			if close[curr] > final_upperband[prev]:
-				supertrend[curr] = True
-			# if current close price crosses below lowerband
-			elif close[curr] < final_lowerband[prev]:
-				supertrend[curr] = False
-			# else, the trend continues
+		final_bands = pd.DataFrame(columns = ['upper', 'lower'])
+		final_bands.iloc[:,0] = [x for x in upper_band - upper_band]
+		final_bands.iloc[:,1] = final_bands.iloc[:,0]
+		
+		for i in range(len(final_bands)):
+			if i == 0:
+				final_bands.iloc[i,0] = 0
 			else:
-				supertrend[curr] = supertrend[prev]
+				if (upper_band[i] < final_bands.iloc[i-1,0]) | (close[i-1] > final_bands.iloc[i-1,0]):
+					final_bands.iloc[i,0] = upper_band[i]
+				else:
+					final_bands.iloc[i,0] = final_bands.iloc[i-1,0]
+		
+		# FINAL LOWER BAND
+		
+		for i in range(len(final_bands)):
+			if i == 0:
+				final_bands.iloc[i, 1] = 0
+			else:
+				if (lower_band[i] > final_bands.iloc[i-1,1]) | (close[i-1] < final_bands.iloc[i-1,1]):
+					final_bands.iloc[i,1] = lower_band[i]
+				else:
+					final_bands.iloc[i,1] = final_bands.iloc[i-1,1]
+		
+		# SUPERTREND
+		
+		supertrend = pd.DataFrame(columns = [f'supertrend_{lookback}'])
+		supertrend.iloc[:,0] = [x for x in final_bands['upper'] - final_bands['upper']]
+		
+		for i in range(len(supertrend)):
+			if i == 0:
+				supertrend.iloc[i, 0] = 0
+			elif supertrend.iloc[i-1, 0] == final_bands.iloc[i-1, 0] and close[i] < final_bands.iloc[i, 0]:
+				supertrend.iloc[i, 0] = final_bands.iloc[i, 0]
+			elif supertrend.iloc[i-1, 0] == final_bands.iloc[i-1, 0] and close[i] > final_bands.iloc[i, 0]:
+				supertrend.iloc[i, 0] = final_bands.iloc[i, 1]
+			elif supertrend.iloc[i-1, 0] == final_bands.iloc[i-1, 1] and close[i] > final_bands.iloc[i, 1]:
+				supertrend.iloc[i, 0] = final_bands.iloc[i, 1]
+			elif supertrend.iloc[i-1, 0] == final_bands.iloc[i-1, 1] and close[i] < final_bands.iloc[i, 1]:
+				supertrend.iloc[i, 0] = final_bands.iloc[i, 0]
+		
+		supertrend = supertrend.set_index(upper_band.index)
+		supertrend = supertrend.dropna()[1:]
+		
+		# ST UPTREND/DOWNTREND
+		
+		upt = []
+		dt = []
+		close = close.iloc[len(close) - len(supertrend):]
+
+		for i in range(len(supertrend)):
+			if close[i] > supertrend.iloc[i, 0]:
+				upt.append(supertrend.iloc[i, 0])
+				dt.append(np.nan)
+			elif close[i] < supertrend.iloc[i, 0]:
+				upt.append(np.nan)
+				dt.append(supertrend.iloc[i, 0])
+			else:
+				upt.append(np.nan)
+				dt.append(np.nan)
 				
-				# adjustment to the final bands
-				if supertrend[curr] == True and final_lowerband[curr] < final_lowerband[prev]:
-					final_lowerband[curr] = final_lowerband[prev]
-				if supertrend[curr] == False and final_upperband[curr] > final_upperband[prev]:
-					final_upperband[curr] = final_upperband[prev]
-
-			# to remove bands according to the trend direction
-			if supertrend[curr] == True:
-				final_upperband[curr] = np.nan
-			else:
-				final_lowerband[curr] = np.nan
-		
+		st, upt, dt = pd.Series(supertrend.iloc[:, 0]), pd.Series(upt), pd.Series(dt)
+		upt.index, dt.index = supertrend.index, supertrend.index
+		#lowerband--upt
 		supertrend_signal=""
 		try:
-			if np.isnan(final_lowerband[-1]) and np.isnan(final_lowerband[-2]) and np.isnan(final_lowerband[-3])  and not np.isnan(final_lowerband[-4]) and not np.isnan(final_upperband[-1]) and not np.isnan(final_upperband[-2]) and not np.isnan(final_upperband[-3]) and np.isnan(final_upperband[-4]):
+			if np.isnan(upt[-1]) and np.isnan(upt[-2]) and np.isnan(upt[-3])  and not np.isnan(upt[-4]) and not np.isnan(dt[-1]) and not np.isnan(dt[-2]) and not np.isnan(dt[-3]) and np.isnan(dt[-4]):
 				supertrend_signal="Sell"
-			elif (not np.isnan(final_upperband[-1]) and np.isnan(final_upperband[-2]) and not np.isnan(final_lowerband[-2])) or (not np.isnan(final_upperband[-2]) and np.isnan(final_upperband[-3]) and not np.isnan(final_lowerband[-3])) or (not np.isnan(final_upperband[-3]) and np.isnan(final_upperband[-4]) and not np.isnan(final_lowerband[-4])) or (not np.isnan(final_upperband[-3]) and not np.isnan(final_upperband[-4]) and (abs(final_upperband[-3]-final_upperband[-4])<0.001) and not np.isnan(final_lowerband[-5])):
+			elif (not np.isnan(dt[-1]) and np.isnan(dt[-2]) and not np.isnan(upt[-2])) or (not np.isnan(dt[-2]) and np.isnan(dt[-3]) and not np.isnan(upt[-3])) or (not np.isnan(dt[-3]) and np.isnan(dt[-4]) and not np.isnan(upt[-4])) or (not np.isnan(dt[-3]) and not np.isnan(dt[-4]) and (abs(dt[-3]-dt[-4])<0.001) and not np.isnan(upt[-5])):
 				supertrend_signal="Sell"
-			elif not np.isnan(final_lowerband[-1]) and not np.isnan(final_lowerband[-2]) and not np.isnan(final_lowerband[-3]) and np.isnan(final_lowerband[-4]) and np.isnan(final_upperband[-1]) and np.isnan(final_upperband[-2]) and np.isnan(final_upperband[-3]) and not np.isnan(final_upperband[-4]):
+			elif not np.isnan(upt[-1]) and not np.isnan(upt[-2]) and not np.isnan(upt[-3]) and np.isnan(upt[-4]) and np.isnan(dt[-1]) and np.isnan(dt[-2]) and np.isnan(dt[-3]) and not np.isnan(dt[-4]):
 				supertrend_signal="Buy"
 			else:
 				supertrend_signal="Mixed"
@@ -261,6 +296,8 @@ class StockStatusBot(object):
 
 	def searchStatus(self, stockSymbolList):
 		infolist = []
+		infolist2=[]
+		docfile_list=["BIOL", "ELYS", "VIVE", "BIVI", "GROM", "BXRX", "DBGI", "ONCS", "WISA", "CYTH", "REVB", "REED", "ENSC", "TIVC", "VS", "PTE", "BVXV", "TOPS", "CEMI", "OP", "MRM", "DRMA", "TROO", "BTOG", "CREG"]
 
 		if stockSymbolList!=[]:
 			stockSymbolList=list(set(stockSymbolList))
@@ -282,6 +319,11 @@ class StockStatusBot(object):
 				signal_10weeks=self.Supertrend(stockSymbol,"10weeks")
 			except:
 				signal_10weeks=""
+			try:
+				if stockSymbol in docfile_list:
+					infolist2.append(stockSymbol)
+			except:
+				pass
 
 			print(stockSymbol, end = ' ')
 			print(signal_4hr, end = ' ')
@@ -316,7 +358,28 @@ class StockStatusBot(object):
 			
 			server.quit()
 
-
+		if infolist2!=[]:
+			infolist2=list(set(infolist2))
+			mail_content = "Stock Symbol\n"
+			for sym in infolist2:
+				mail_content += f"{sym}\n"
+			print('___entered if block___')
+			msg = EmailMessage()
+			msg.set_content(mail_content)
+			msg['Subject'] = 'Stocks cross referenced with doc file'
+			msg['From'] = 'high.risk.stocks@gmail.com'
+			recipients = ['high.risk.stocks@gmail.com', 'mike@mihfinancial.ca']
+			msg['To'] = ", ".join(recipients)
+			# Send the message via our own SMTP server.
+			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+			server.login("high.risk.stocks@gmail.com", "gnxzvixizpfqdhhj")
+			print("SUCCESS at log into high.risk.stocks")
+			server.send_message(msg)
+			
+			print('___exited if block2___')
+			
+			server.quit()
+		
 		print("=======")
 
 
