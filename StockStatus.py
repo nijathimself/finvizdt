@@ -180,7 +180,7 @@ class StockStatusBot(object):
 		elif intrval=="1d":
 			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_daily, n_bars=200, extended_session=False)
 		elif intrval=="1w":
-			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_weekly, n_bars=50, extended_session=False)
+			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_weekly, n_bars=200, extended_session=False)
 		elif intrval=="10weeks":
 			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_daily, n_bars=200, extended_session=False)
 			logic = {'open'  : 'first', 'high'  : 'max', 'low'   : 'min', 'close' : 'last', 'volume': 'sum'}
