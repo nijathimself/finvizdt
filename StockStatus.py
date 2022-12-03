@@ -311,7 +311,8 @@ class StockStatusBot(object):
 			msg.set_content(mail_content)
 			msg['Subject'] = 'High Risk Stocks'
 			msg['From'] = 'high.risk.stocks@gmail.com'
-			recipients = ['high.risk.stocks@gmail.com', 'mike@mihfinancial.ca']
+			recipients = ['high.risk.stocks@gmail.com']
+			#, 'mike@mihfinancial.ca']
 			msg['To'] = ", ".join(recipients)
 			# Send the message via our own SMTP server.
 			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
@@ -333,7 +334,8 @@ class StockStatusBot(object):
 			msg.set_content(mail_content)
 			msg['Subject'] = 'Cross referenced with doc file'
 			msg['From'] = 'high.risk.stocks@gmail.com'
-			recipients = ['high.risk.stocks@gmail.com', 'mike@mihfinancial.ca']
+			recipients = ['high.risk.stocks@gmail.com']
+			#, 'mike@mihfinancial.ca']
 			msg['To'] = ", ".join(recipients)
 			# Send the message via our own SMTP server.
 			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
