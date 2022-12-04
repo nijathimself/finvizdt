@@ -192,10 +192,30 @@ class StockStatusBot(object):
 			low = df['low']
 			close = df['close']
 		except:
-			df=yf.download(some_symbol, interval='1wk', period='1y')
-			high = df['High']
-			low = df['Low']
-			close = df['Close']
+			prefix=tv.search_symbol(some_symbol)[0]['prefix']
+			try:
+				if intrval=="4hr":
+					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_4_hour, n_bars=300, extended_session=True)
+				elif intrval=="1d":
+					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_daily, n_bars=300, extended_session=False)
+				elif intrval=="1w":
+					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_weekly, n_bars=300, extended_session=False)
+				elif intrval=="10weeks":
+					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_daily, n_bars=300, extended_session=False)
+					logic = {'open'  : 'first', 'high'  : 'max', 'low'   : 'min', 'close' : 'last', 'volume': 'sum'}
+					df = df.resample('10W').apply(logic)
+				
+				high = df['high']
+				low = df['low']
+				close = df['close']
+			except:
+				pass
+				# df=yf.download(some_symbol, interval='1wk', period='1y')
+				# df.drop(df.tail(1).index,inplace=True)
+				# high = df['High']
+				# low = df['Low']
+				# close = df['Close']
+
 
 
 		
