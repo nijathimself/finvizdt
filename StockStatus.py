@@ -444,7 +444,15 @@ class StockStatusBot(object):
 	def searchStatus(self, stockSymbolList):
 		infolist = []
 		infolist2=[]
-		docfile_list=["BIOL", "ELYS", "VIVE", "BIVI", "GROM", "BXRX", "DBGI", "ONCS", "WISA", "CYTH", "REVB", "REED", "ENSC", "TIVC", "VS", "PTE", "BVXV", "TOPS", "CEMI", "OP", "MRM", "DRMA", "TROO", "BTOG", "CREG"]
+
+		docfile_list=[]
+		with open("tickers.txt", "r") as crossref_tickers:
+			lines = crossref_tickers.readlines()
+		for l in lines:
+					as_list = l.split("\n")
+					docfile_list.append(as_list[0].replace("\n", ""))
+		docfile_list=[x.strip(' ') for x in docfile_list]
+		print("DOCFILE_LIST:", docfile_list)
 
 		if stockSymbolList!=[]:
 			stockSymbolList=list(set(stockSymbolList))
