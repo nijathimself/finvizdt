@@ -150,7 +150,7 @@ class StockStatusBot(object):
 			print(str(e))
 			print('Login Failed')
 
-	def Supertrend(self,some_symbol,intrval):
+	def Supertrend(self, some_symbol, intrval):
 		
 		atr_period = 10
 		multiplier = 3.0
@@ -279,6 +279,168 @@ class StockStatusBot(object):
 
 		return supertrend_signal
 
+	def Supertrend2(self, some_symbol, intrval):
+    
+		atr_period = 10
+		multiplier = 3.0
+		american=["NASDAQ", "NYSE", "Arca", "OTC", "DJ", "SP", "CBOE", "CBOT", "CME GLOBEX", "COMEX", "NYMEX", "ICEUS", "FairX", "ECONOMY"]
+
+		username = 'emingarayevemin'
+		password = 'Maykhart1992!'
+		tv = TvDatafeed(username, password)
+		exch=tv.search_symbol(some_symbol)[0]['exchange']
+
+		if len(set(exch.split()).intersection(set(american)))==0:
+			for i in range(len(tv.search_symbol(some_symbol))):
+				try:
+					exch=tv.search_symbol('BEST')[i]['exchange']
+					if exch in american:
+						break
+					else:
+						continue
+				except:
+					print('No American stock found')
+					continue
+		
+		if intrval=="4hr":
+			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_4_hour, n_bars=300, extended_session=True)
+		elif intrval=="1d":
+			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_daily, n_bars=300, extended_session=False)
+		elif intrval=="1w":
+			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_weekly, n_bars=100, extended_session=False)
+		elif intrval=="10weeks":
+			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_daily, n_bars=1000, extended_session=False)
+			logic = {'open'  : 'first', 'high'  : 'max', 'low'   : 'min', 'close' : 'last', 'volume': 'sum'}
+			try:
+				df = df.resample('10W').apply(logic)
+			except:
+				prefix=tv.search_symbol(some_symbol)[0]['prefix']
+				df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_daily, n_bars=1000, extended_session=False)
+				df = df.resample('10W').apply(logic)
+		
+		
+		try:
+			high = df['high']
+			low = df['low']
+			close = df['close']
+		except:
+			prefix=tv.search_symbol(some_symbol)[0]['prefix']
+			try:
+				if intrval=="4hr":
+					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_4_hour, n_bars=300, extended_session=True)
+				elif intrval=="1d":
+					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_daily, n_bars=300, extended_session=False)
+				elif intrval=="1w":
+					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_weekly, n_bars=100, extended_session=False)
+				
+				high = df['high']
+				low = df['low']
+				close = df['close']
+			except:
+				pass
+
+
+
+
+
+		lookback=10
+		multiplier=3
+		# ATR
+		tr1 = pd.DataFrame(high - low)
+		tr2 = pd.DataFrame(abs(high - close.shift(1)))
+		tr3 = pd.DataFrame(abs(low - close.shift(1)))
+		frames = [tr1, tr2, tr3]
+		tr = pd.concat(frames, axis = 1, join = 'inner').max(axis = 1)
+		atr = tr.ewm(lookback).mean()
+		
+		# H/L AVG AND BASIC UPPER & LOWER BAND
+		
+		hl_avg = (high + low) / 2
+		upper_band = (hl_avg + multiplier * atr).dropna()
+		lower_band = (hl_avg - multiplier * atr).dropna()
+		
+		# FINAL UPPER BAND
+		
+		final_bands = pd.DataFrame(columns = ['upper', 'lower'])
+		final_bands.iloc[:,0] = [x for x in upper_band - upper_band]
+		final_bands.iloc[:,1] = final_bands.iloc[:,0]
+		
+		for i in range(len(final_bands)):
+			if i == 0:
+				final_bands.iloc[i,0] = 0
+			else:
+				if (upper_band[i] < final_bands.iloc[i-1,0]) | (close[i-1] > final_bands.iloc[i-1,0]):
+					final_bands.iloc[i,0] = upper_band[i]
+				else:
+					final_bands.iloc[i,0] = final_bands.iloc[i-1,0]
+		
+		# FINAL LOWER BAND
+		
+		for i in range(len(final_bands)):
+			if i == 0:
+				final_bands.iloc[i, 1] = 0
+			else:
+				if (lower_band[i] > final_bands.iloc[i-1,1]) | (close[i-1] < final_bands.iloc[i-1,1]):
+					final_bands.iloc[i,1] = lower_band[i]
+				else:
+					final_bands.iloc[i,1] = final_bands.iloc[i-1,1]
+		
+		# SUPERTREND
+		
+		supertrend = pd.DataFrame(columns = [f'supertrend_{lookback}'])
+		supertrend.iloc[:,0] = [x for x in final_bands['upper'] - final_bands['upper']]
+		
+		for i in range(len(supertrend)):
+			if i == 0:
+				supertrend.iloc[i, 0] = 0
+			elif supertrend.iloc[i-1, 0] == final_bands.iloc[i-1, 0] and close[i] < final_bands.iloc[i, 0]:
+				supertrend.iloc[i, 0] = final_bands.iloc[i, 0]
+			elif supertrend.iloc[i-1, 0] == final_bands.iloc[i-1, 0] and close[i] > final_bands.iloc[i, 0]:
+				supertrend.iloc[i, 0] = final_bands.iloc[i, 1]
+			elif supertrend.iloc[i-1, 0] == final_bands.iloc[i-1, 1] and close[i] > final_bands.iloc[i, 1]:
+				supertrend.iloc[i, 0] = final_bands.iloc[i, 1]
+			elif supertrend.iloc[i-1, 0] == final_bands.iloc[i-1, 1] and close[i] < final_bands.iloc[i, 1]:
+				supertrend.iloc[i, 0] = final_bands.iloc[i, 0]
+		
+		supertrend = supertrend.set_index(upper_band.index)
+		supertrend = supertrend.dropna()[1:]
+		
+		# ST UPTREND/DOWNTREND
+		
+		upt = []
+		dt = []
+		close = close.iloc[len(close) - len(supertrend):]
+
+		for i in range(len(supertrend)):
+			if close[i] > supertrend.iloc[i, 0]:
+				upt.append(supertrend.iloc[i, 0])
+				dt.append(np.nan)
+			elif close[i] < supertrend.iloc[i, 0]:
+				upt.append(np.nan)
+				dt.append(supertrend.iloc[i, 0])
+			else:
+				upt.append(np.nan)
+				dt.append(np.nan)
+				
+		st, upt, dt = pd.Series(supertrend.iloc[:, 0]), pd.Series(upt), pd.Series(dt)
+		upt.index, dt.index = supertrend.index, supertrend.index
+
+		supertrend_signal=""
+		try:
+			if np.isnan(upt[-1]) and np.isnan(upt[-2]) and np.isnan(upt[-3])  and not np.isnan(upt[-4]) and not np.isnan(dt[-1]) and not np.isnan(dt[-2]) and not np.isnan(dt[-3]) and np.isnan(dt[-4]):
+				supertrend_signal="Sell"
+			elif (not np.isnan(dt[-1]) and np.isnan(dt[-2]) and not np.isnan(upt[-2])) or (not np.isnan(dt[-2]) and np.isnan(dt[-3]) and not np.isnan(upt[-3])) or (not np.isnan(dt[-3]) and np.isnan(dt[-4]) and not np.isnan(upt[-4])) or (not np.isnan(dt[-3]) and not np.isnan(dt[-4]) and (abs(dt[-3]-dt[-4])<0.001) and not np.isnan(upt[-5])):
+				supertrend_signal="Sell"
+			elif not np.isnan(upt[-1]) and not np.isnan(upt[-2]) and not np.isnan(upt[-3]) and np.isnan(upt[-4]) and np.isnan(dt[-1]) and np.isnan(dt[-2]) and np.isnan(dt[-3]) and not np.isnan(dt[-4]):
+				supertrend_signal="Buy"
+			else:
+				supertrend_signal="Mixed"
+		except:
+			print(some_symbol)
+
+		return supertrend_signal
+
+
 	def searchStatus(self, stockSymbolList):
 		infolist = []
 		infolist2=[]
@@ -289,19 +451,19 @@ class StockStatusBot(object):
 
 		for stockSymbol in stockSymbolList:
 			try:
-				signal_4hr=self.Supertrend(stockSymbol,"4hr")
+				signal_4hr=self.Supertrend2(stockSymbol,"4hr")
 			except:
 				signal_4hr=""
 			try:
-				signal_1d=self.Supertrend(stockSymbol,"1d")
+				signal_1d=self.Supertrend2(stockSymbol,"1d")
 			except:
 				signal_1d=""
 			try:
-				signal_1w=self.Supertrend(stockSymbol,"1w")
+				signal_1w=self.Supertrend2(stockSymbol,"1w")
 			except:
 				signal_1w=""
 			try:
-				signal_10weeks=self.Supertrend(stockSymbol,"10weeks")
+				signal_10weeks=self.Supertrend2(stockSymbol,"10weeks")
 			except:
 				signal_10weeks=""
 			try:
