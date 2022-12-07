@@ -459,19 +459,19 @@ class StockStatusBot(object):
 
 		for stockSymbol in stockSymbolList:
 			try:
-				signal_4hr=self.Supertrend2(stockSymbol,"4hr")
+				signal_4hr=self.Supertrend(stockSymbol,"4hr")
 			except:
 				signal_4hr=""
 			try:
-				signal_1d=self.Supertrend2(stockSymbol,"1d")
+				signal_1d=self.Supertrend(stockSymbol,"1d")
 			except:
 				signal_1d=""
 			try:
-				signal_1w=self.Supertrend2(stockSymbol,"1w")
+				signal_1w=self.Supertrend(stockSymbol,"1w")
 			except:
 				signal_1w=""
 			try:
-				signal_10weeks=self.Supertrend2(stockSymbol,"10weeks")
+				signal_10weeks=self.Supertrend(stockSymbol,"10weeks")
 			except:
 				signal_10weeks=""
 			try:
