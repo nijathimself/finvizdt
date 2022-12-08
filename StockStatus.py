@@ -165,7 +165,7 @@ class StockStatusBot(object):
 		if len(set(exch.split()).intersection(set(american)))==0:
 			for i in range(len(tv.search_symbol(some_symbol))):
 				try:
-					exch=tv.search_symbol('BEST')[i]['exchange']
+					exch=tv.search_symbol(some_symbol)[i]['exchange']
 					if exch in american:
 						break
 					else:
