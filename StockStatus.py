@@ -529,8 +529,9 @@ class StockStatusBot(object):
 				signal_4hr=""
 			try:
 				signal_1d=self.Supertrend(stockSymbol,"1d")
-			except:
+			except Exception as ert:
 				signal_1d=""
+				print(ert)
 			try:
 				signal_1w=self.Supertrend(stockSymbol,"1w")
 			except:
