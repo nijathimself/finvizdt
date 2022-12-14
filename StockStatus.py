@@ -150,6 +150,115 @@ class StockStatusBot(object):
 			print(str(e))
 			print('Login Failed')
 
+
+	def converter(self, df):
+		today = datetime.today()
+		current_year = today.strftime("%Y")
+
+		df=df.iloc[7:,:]
+		xs=[]
+		for i in df.index:
+			xs.append(i.year)
+		xs=sorted(set(xs))
+		df_final=df.iloc[0:2,:]
+		for yr in xs:
+			if yr==2014 or yr==2015:
+				continue
+
+			df_year=df[df.index.year==yr]
+			j=0
+			for i in range(len(df_year.index)):
+				date1=df_year.index[j]
+				date2=df_year.index[i]
+				
+				if date1.month==1 and (date1.day_of_week!=0 and date1.day_of_week!=1):
+					j=j+1
+					continue
+				
+				if yr!=current_year and date1.month==12:
+					df1=df_year.iloc[j:,:]
+					#df1['open'][0] no changes
+					df1['close'][0]=df1['close'][-1]
+					df1['low'][0]=df1['low'].min()
+					df1['high'][0]=df1['high'].max()
+					df1.drop(df1.tail(len(df1.index)-1).index,inplace=True)
+					df_final=df_final.append(df1, ignore_index=False)
+					break
+				
+				if str(yr)==current_year and date2==df_year.index[-1] and not ((date2-date1).days>=69):
+					df1=df_year.iloc[j:,:]
+					#df1['open'][0] no changes
+					df1['close'][0]=df1['close'][-1]
+					df1['low'][0]=df1['low'].min()
+					df1['high'][0]=df1['high'].max()
+					df1.drop(df1.tail(len(df1.index)-1).index,inplace=True)
+					df_final=df_final.append(df1, ignore_index=False)
+
+				if (date2-date1).days>=69:
+					df1=df_year.iloc[j:i,:]
+					#df1['open'][0] no changes
+					df1['close'][0]=df1['close'][-1]
+					df1['low'][0]=df1['low'].min()
+					df1['high'][0]=df1['high'].max()
+					df1.drop(df1.tail(len(df1.index)-1).index,inplace=True)
+					df_final=df_final.append(df1, ignore_index=False)
+					j=i
+
+		df_final=df_final.iloc[2:,:]
+		return df_final
+
+	def ST(self, df): #df is the dataframe, n is the period, f is the factor; f=3, n=7 are commonly used.
+		#Calculation of ATR
+		f=3
+		n=10
+		df['H-L']=abs(df['high']-df['low'])
+		df['H-PC']=abs(df['high']-df['close'].shift(1))
+		df['L-PC']=abs(df['low']-df['close'].shift(1))
+		df['TR']=df[['H-L','H-PC','L-PC']].max(axis=1)
+		df['ATR']=np.nan
+		df['ATR'][n-1]=df['TR'][:n-1].mean() #.ix is deprecated from pandas verion- 0.19
+		for i in range(n,len(df)):
+			df['ATR'][i]=(df['ATR'][i-1]*(n-1)+ df['TR'][i])/n
+
+		#Calculation of SuperTrend
+		df['Upper Basic']=(df['high']+df['low'])/2+(f*df['ATR'])
+		df['Lower Basic']=(df['high']+df['low'])/2-(f*df['ATR'])
+		df['Upper Band']=df['Upper Basic']
+		df['Lower Band']=df['Lower Basic']
+		for i in range(n,len(df)):
+			if df['close'][i-1]<=df['Upper Band'][i-1]:
+				df['Upper Band'][i]=min(df['Upper Basic'][i],df['Upper Band'][i-1])
+			else:
+				df['Upper Band'][i]=df['Upper Basic'][i]    
+		for i in range(n,len(df)):
+			if df['close'][i-1]>=df['Lower Band'][i-1]:
+				df['Lower Band'][i]=max(df['Lower Basic'][i],df['Lower Band'][i-1])
+			else:
+				df['Lower Band'][i]=df['Lower Basic'][i]   
+		df['SuperTrend']=np.nan
+		for i in df['SuperTrend']:
+			if df['close'][n-1]<=df['Upper Band'][n-1]:
+				df['SuperTrend'][n-1]=df['Upper Band'][n-1]
+			elif df['close'][n-1]>df['Upper Band'][i]:
+				df['SuperTrend'][n-1]=df['Lower Band'][n-1]
+		for i in range(n,len(df)):
+			if df['SuperTrend'][i-1]==df['Upper Band'][i-1] and df['close'][i]<=df['Upper Band'][i]:
+				df['SuperTrend'][i]=df['Upper Band'][i]
+			elif  df['SuperTrend'][i-1]==df['Upper Band'][i-1] and df['close'][i]>=df['Upper Band'][i]:
+				df['SuperTrend'][i]=df['Lower Band'][i]
+			elif df['SuperTrend'][i-1]==df['Lower Band'][i-1] and df['close'][i]>=df['Lower Band'][i]:
+				df['SuperTrend'][i]=df['Lower Band'][i]
+			elif df['SuperTrend'][i-1]==df['Lower Band'][i-1] and df['close'][i]<=df['Lower Band'][i]:
+				df['SuperTrend'][i]=df['Upper Band'][i]
+		for i in range(len(df)):
+			if abs(df['SuperTrend'][i]-df['Upper Band'][i])<0.00001:
+				df['Lower Band'][i]=np.nan
+			elif abs(df['SuperTrend'][i]-df['Lower Band'][i])<0.00001:
+				df['Upper Band'][i]=np.nan
+		return df['Lower Band'], df['Upper Band']
+
+
+
 	def Supertrend(self, some_symbol, intrval):
 		
 		atr_period = 10
@@ -178,13 +287,17 @@ class StockStatusBot(object):
 		if intrval=="4hr":
 			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_4_hour, n_bars=200, extended_session=True)
 		elif intrval=="1d":
-			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_daily, n_bars=200, extended_session=False)
+			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_daily, n_bars=500, extended_session=False)
 		elif intrval=="1w":
-			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_weekly, n_bars=200, extended_session=False)
+			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_weekly, n_bars=500, extended_session=False)
 		elif intrval=="10weeks":
-			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_daily, n_bars=200, extended_session=False)
-			logic = {'open'  : 'first', 'high'  : 'max', 'low'   : 'min', 'close' : 'last', 'volume': 'sum'}
-			df = df.resample('10W').apply(logic)
+			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_daily, n_bars=5000, extended_session=False)
+			try:
+				df=converter(df)
+			except:
+				prefix=tv.search_symbol(some_symbol)[0]['prefix']
+				df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_daily, n_bars=5000, extended_session=False)
+				df=converter(df)
 		
 		
 		try:
@@ -197,72 +310,64 @@ class StockStatusBot(object):
 				if intrval=="4hr":
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_4_hour, n_bars=300, extended_session=True)
 				elif intrval=="1d":
-					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_daily, n_bars=300, extended_session=False)
+					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_daily, n_bars=500, extended_session=False)
 				elif intrval=="1w":
-					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_weekly, n_bars=300, extended_session=False)
-				elif intrval=="10weeks":
-					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_daily, n_bars=300, extended_session=False)
-					logic = {'open'  : 'first', 'high'  : 'max', 'low'   : 'min', 'close' : 'last', 'volume': 'sum'}
-					df = df.resample('10W').apply(logic)
+					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_weekly, n_bars=500, extended_session=False)
 				
 				high = df['high']
 				low = df['low']
 				close = df['close']
 			except:
 				pass
-				# df=yf.download(some_symbol, interval='1wk', period='1y')
-				# df.drop(df.tail(1).index,inplace=True)
-				# high = df['High']
-				# low = df['Low']
-				# close = df['Close']
-
-
-
 		
-		# calculate ATR
-		price_diffs = [high - low, 
-					high - close.shift(), 
-					close.shift() - low]
-		true_range = pd.concat(price_diffs, axis=1)
-		true_range = true_range.abs().max(axis=1)
-		# default ATR calculation in supertrend indicator
-		atr = true_range.ewm(alpha=1/atr_period,min_periods=atr_period).mean() 
-		# df['atr'] = df['tr'].rolling(atr_period).mean()
+    	df_new=ST(df)
+		final_lowerband=df_new[0]
+		final_upperband=df_new[1]
 		
-		# HL2 is simply the average of high and low prices
-		hl2 = (high + low) / 2
-		# upperband and lowerband calculation
-		# notice that final bands are set to be equal to the respective bands
-		final_upperband = upperband = hl2 + (multiplier * atr)
-		final_lowerband = lowerband = hl2 - (multiplier * atr)
+		# # calculate ATR
+		# price_diffs = [high - low, 
+		# 			high - close.shift(), 
+		# 			close.shift() - low]
+		# true_range = pd.concat(price_diffs, axis=1)
+		# true_range = true_range.abs().max(axis=1)
+		# # default ATR calculation in supertrend indicator
+		# atr = true_range.ewm(alpha=1/atr_period,min_periods=atr_period).mean() 
+		# # df['atr'] = df['tr'].rolling(atr_period).mean()
 		
-		# initialize Supertrend column to True
-		supertrend = [True] * len(df)
+		# # HL2 is simply the average of high and low prices
+		# hl2 = (high + low) / 2
+		# # upperband and lowerband calculation
+		# # notice that final bands are set to be equal to the respective bands
+		# final_upperband = upperband = hl2 + (multiplier * atr)
+		# final_lowerband = lowerband = hl2 - (multiplier * atr)
 		
-		for i in range(1, len(df.index)):
-			curr, prev = i, i-1
+		# # initialize Supertrend column to True
+		# supertrend = [True] * len(df)
+		
+		# for i in range(1, len(df.index)):
+		# 	curr, prev = i, i-1
 			
-			# if current close price crosses above upperband
-			if close[curr] > final_upperband[prev]:
-				supertrend[curr] = True
-			# if current close price crosses below lowerband
-			elif close[curr] < final_lowerband[prev]:
-				supertrend[curr] = False
-			# else, the trend continues
-			else:
-				supertrend[curr] = supertrend[prev]
+		# 	# if current close price crosses above upperband
+		# 	if close[curr] > final_upperband[prev]:
+		# 		supertrend[curr] = True
+		# 	# if current close price crosses below lowerband
+		# 	elif close[curr] < final_lowerband[prev]:
+		# 		supertrend[curr] = False
+		# 	# else, the trend continues
+		# 	else:
+		# 		supertrend[curr] = supertrend[prev]
 				
-				# adjustment to the final bands
-				if supertrend[curr] == True and final_lowerband[curr] < final_lowerband[prev]:
-					final_lowerband[curr] = final_lowerband[prev]
-				if supertrend[curr] == False and final_upperband[curr] > final_upperband[prev]:
-					final_upperband[curr] = final_upperband[prev]
+		# 		# adjustment to the final bands
+		# 		if supertrend[curr] == True and final_lowerband[curr] < final_lowerband[prev]:
+		# 			final_lowerband[curr] = final_lowerband[prev]
+		# 		if supertrend[curr] == False and final_upperband[curr] > final_upperband[prev]:
+		# 			final_upperband[curr] = final_upperband[prev]
 
-			# to remove bands according to the trend direction
-			if supertrend[curr] == True:
-				final_upperband[curr] = np.nan
-			else:
-				final_lowerband[curr] = np.nan
+		# 	# to remove bands according to the trend direction
+		# 	if supertrend[curr] == True:
+		# 		final_upperband[curr] = np.nan
+		# 	else:
+		# 		final_lowerband[curr] = np.nan
 		
 		supertrend_signal=""
 		try:
@@ -278,6 +383,11 @@ class StockStatusBot(object):
 			print(some_symbol)
 
 		return supertrend_signal
+
+
+
+
+
 
 	def Supertrend2(self, some_symbol, intrval):
     
@@ -486,8 +596,7 @@ class StockStatusBot(object):
 			print(signal_1w, end = ' ')
 			print(signal_10weeks)
 			#signal_4hr=="Sell" or
-			#or signal_10weeks=="Sell"
-			if  signal_1d=="Sell" or signal_1w=="Sell" :
+			if  signal_1d=="Sell" or signal_1w=="Sell" or signal_10weeks=="Sell":
 				infolist.append(stockSymbol)
 			else:
 				continue
