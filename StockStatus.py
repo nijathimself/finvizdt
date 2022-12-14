@@ -380,7 +380,7 @@ class StockStatusBot(object):
 			else:
 				supertrend_signal="Mixed"
 		except:
-			print(some_symbol)
+			print('problems at line 383')
 
 		return supertrend_signal
 
