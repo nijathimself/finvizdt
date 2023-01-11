@@ -57,7 +57,7 @@ class StockStatusBot(object):
 		self.base_url = os.environ.get('BASE_URL')
 		#self.loginWithMail()
 		self.mailLoginWithSelenium()
-		self.loginWithTracker()
+		#self.loginWithTracker()
 		self.searchStatus(self.stockSymbolList)
 
 	def loginWithMail(self):
