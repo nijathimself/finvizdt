@@ -332,7 +332,7 @@ class StockStatusBot(object):
 			except:
 				pass
 		
-		
+
 		df_new=self.ST(df)
 		final_lowerband=df_new[0]
 		final_upperband=df_new[1]
@@ -538,6 +538,7 @@ class StockStatusBot(object):
 			stockSymbolList=list(set(stockSymbolList))
 
 		for stockSymbol in stockSymbolList:
+			print("stockSymbol Name:", stockSymbol)
 			try:
 				signal_4hr=self.Supertrend(stockSymbol,"4hr")
 			except:
