@@ -43,6 +43,12 @@ class StockStatusBot(object):
 	class will scrape data from Imail Inbox after login
 	"""
 
+	class madeupintervalobj:
+		def __init__(self, value):
+			self.value = value
+	x2D=madeupintervalobj('2D')
+	x10W=madeupintervalobj('10W')
+
 	
 	def __init__(self, conf,data_center=None):
 		super(StockStatusBot, self).__init__()
@@ -266,8 +272,8 @@ class StockStatusBot(object):
 		american=["NASDAQ", "NYSE", "Arca", "OTC", "DJ", "SP", "CBOE", "CBOT", "CME GLOBEX", "COMEX", "NYMEX", "ICEUS", "FairX", "ECONOMY"]
 
 		#df = yf.download(some_symbol, start='2022-03-11', end='2022-11-11', interval="1wk")
-		username = 'emingarayevemin'
-		password = 'Maykhart1992!'
+		username = 'trader989'
+		password = '$Palta646'
 		tv = TvDatafeed(username, password)
 		exch=tv.search_symbol(some_symbol)[0]['exchange']
 
@@ -290,6 +296,8 @@ class StockStatusBot(object):
 			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_daily, n_bars=500, extended_session=False)
 		elif intrval=="1w":
 			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_weekly, n_bars=500, extended_session=False)
+		elif intrval=="2d":
+			df=tv.get_hist(some_symbol, exchange=exch, interval = x2D, n_bars=500, extended_session=False)
 		elif intrval=="10weeks":
 			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_daily, n_bars=5000, extended_session=False)
 			try:
@@ -311,6 +319,8 @@ class StockStatusBot(object):
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_4_hour, n_bars=300, extended_session=True)
 				elif intrval=="1d":
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_daily, n_bars=500, extended_session=False)
+				elif intrval=="2d":
+					df=tv.get_hist(some_symbol, exchange=prefix, interval = x2D, n_bars=500, extended_session=False)
 				elif intrval=="1w":
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_weekly, n_bars=500, extended_session=False)
 				
@@ -336,7 +346,7 @@ class StockStatusBot(object):
 			else:
 				supertrend_signal="Mixed"
 		except:
-			print('problems at line 383')
+			print('problems at line 349')
 
 		return supertrend_signal
 
@@ -509,7 +519,8 @@ class StockStatusBot(object):
 
 	def searchStatus(self, stockSymbolList):
 		infolist = []
-		infolist2=[]
+		infolist2 = []
+		infolist3 = []
 
 		docfile_list=[]
 		with open("tickers.txt", "r") as crossref_tickers:
@@ -542,6 +553,10 @@ class StockStatusBot(object):
 			except:
 				signal_10weeks=""
 			try:
+				signal_2d=self.Supertrend(stockSymbol,"2d")
+			except:
+				signal_2d=""
+			try:
 				if stockSymbol in docfile_list:
 					infolist2.append(stockSymbol)
 			except:
@@ -551,12 +566,24 @@ class StockStatusBot(object):
 			print(signal_4hr, end = ' ')
 			print(signal_1d, end = ' ')
 			print(signal_1w, end = ' ')
+			print(signal_2d, end = ' ')
 			print(signal_10weeks)
 			#signal_4hr=="Sell" or
 			if  signal_1d=="Sell" or signal_1w=="Sell" or signal_10weeks=="Sell":
 				infolist.append(stockSymbol)
 			else:
 				continue
+
+			if  signal_2d=="Buy":
+				infolist3.append(stockSymbol)
+			else:
+				continue
+
+		print("______________________")
+		print("______________________")
+		print("BUY INFOLIST3=",infolist3)
+		print("______________________")
+		print("______________________")
 
 		if infolist!=[]:
 			infolist=list(set(infolist))
