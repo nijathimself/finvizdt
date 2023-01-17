@@ -23,6 +23,8 @@ TROO
 BTOG
 CREG
 PSHG
+gmbl
+sidu
 ****
 LSTA
 EMBK
