@@ -564,6 +564,7 @@ class StockStatusBot(object):
 			except:
 				signal_10weeks=""
 			# try:
+			
 			signal_2d=self.Supertrend(stockSymbol,"2d")
 			# except:
 			# 	signal_2d=""
