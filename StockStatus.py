@@ -127,6 +127,9 @@ class StockStatusBot(object):
 						msg = email.message_from_string(str(arr[1],'utf-8'))
 						obj = re.findall(r'\w+://finviz.com/quote.ashx\?t=([A-Z]+)', msg.as_string())
 						obj2 = re.findall(r'\w+://elite.finviz.com/quote.ashx\?t=([A-Z]+)', msg.as_string())
+						print('obj')
+						print(obj)
+						print(obj2)
 						if obj!=[]:
 							for i in range(len(obj)):
 								self.stockSymbolList.append(obj[i])
