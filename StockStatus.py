@@ -65,6 +65,12 @@ class StockStatusBot(object):
 		self.mailLoginWithSelenium()
 		#self.loginWithTracker()
 		self.searchStatus(self.stockSymbolList)
+		username = 'trader989'
+		password = '$Palta646'
+		print('______BEGIN____')
+		tv.token="eyJhbGciOiJSUzUxMiIsImtpZCI6IkdaeFUiLCJ0eXAiOiJKV1QifQ.eyJ1c2VyX2lkIjoyMTM0NjYzLCJleHAiOjE2NzQwNTM5NTAsImlhdCI6MTY3NDAzOTU1MCwicGxhbiI6InByb19wcmVtaXVtIiwiZXh0X2hvdXJzIjoxLCJwZXJtIjoiYW1leCxjYm90LGNib3RfbWluaSxjbWUsY21lLWZ1bGwsY21lX21pbmksY29tZXgsY29tZXhfbWluaSxuYXNkYXEsbmFzZGFxX2dpZHMsbnltZXgsbnltZXhfbWluaSxueXNlLGx1eHNlX2RseSIsInN0dWR5X3Blcm0iOiJQVUI7T3BtV3NabWhHNFQ4QnN6TkFBUmozTVFPc0dRSzU4ZngsUFVCO2ZlMWJkZWFiMDA2YjQ4MTM4ZGNkZTM1ZWZmYmFjMGNmLFBVQjtZdGd5ckwzU2pwVThMM09YSkc5em5STFI2ZkxuVnlZWSxQVUI7YjI2ZjY1YzMyYWUzNDU1YjhkNzgzN2I4NjZmNDJiZTksdHYtdm9sdW1lYnlwcmljZSxQVUI7NjI5MzM2YjhiYTJlNGQ0NDlmZjkxMTMwOGYwNTUyOTQsdHYtcHJvc3R1ZGllcyxQVUI7cXNFbEIzT0kyVVA0bUl2V0ZTRVhMazlCSDJCY0RTdjMsdHYtY2hhcnRwYXR0ZXJucyxQVUI7Y1hvTFJKc1ZxUTFuZXg5VGNrc21wSEZGb2RhTGdBTDQsUFVCOzhrSDZVNWRPcEJweWZZNXpIY3NNYWxRVXRsMGlQdzhHLFBVQjsyMTJjNGVkYmZlMWM0MDU2YjJhM2YyMWYyMzg2YmU5ZiIsIm1heF9zdHVkaWVzIjoyNSwibWF4X2Z1bmRhbWVudGFscyI6MCwibWF4X2NoYXJ0cyI6OCwibWF4X2FjdGl2ZV9hbGVydHMiOjQwMCwibWF4X3N0dWR5X29uX3N0dWR5IjoyNH0.S0wxDL7c1NV5H477QEgMAdVb0HejdwBYfqpeFhWjHXrlMED8AT-UJJ3ozKUGyqZYVW0yVvrYzCEdbabYGXnQWKAoXEnz2lZsgU--0yHNZUp3R5yjCEnDcVkk0GLqSrKIFsYhuGzavL2sK6bY9gGrHiggzC2ADU6RlzeVz6SvkpI"
+		tv = TvDatafeed(username, password)
+		print('______BEGIN222222222____')
 
 	def loginWithMail(self):
 		imap = imaplib.IMAP4_SSL(self.IMAP_SERVER)
@@ -271,12 +277,8 @@ class StockStatusBot(object):
 		multiplier = 3.0
 		american=["NASDAQ", "NYSE", "Arca", "OTC", "DJ", "SP", "CBOE", "CBOT", "CME GLOBEX", "COMEX", "NYMEX", "ICEUS", "FairX", "ECONOMY"]
 
-		#df = yf.download(some_symbol, start='2022-03-11', end='2022-11-11', interval="1wk")
-		username = 'trader989'
-		password = '$Palta646'
-		print('______BEGIN____')
-		tv = TvDatafeed(username, password)
-		print('______BEGIN222222222____')
+
+
 		exch=tv.search_symbol(some_symbol)[0]['exchange']
 		print('______END____')
 
