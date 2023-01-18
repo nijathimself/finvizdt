@@ -19,7 +19,6 @@ load_dotenv()
 from tvDatafeed import TvDatafeed, Interval
 import imaplib
 import smtplib
-
 import mailparser
 import os.path
 
