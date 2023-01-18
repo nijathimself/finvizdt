@@ -126,9 +126,13 @@ class StockStatusBot(object):
 					if isinstance(arr, tuple):
 						msg = email.message_from_string(str(arr[1],'utf-8'))
 						obj = re.findall(r'\w+://finviz.com/quote.ashx\?t=([A-Z]+)', msg.as_string())
+						obj2 = re.findall(r'\w+://elite.finviz.com/quote.ashx\?t=([A-Z]+)', msg.as_string())
 						if obj!=[]:
 							for i in range(len(obj)):
 								self.stockSymbolList.append(obj[i])
+						if obj2!=[]:
+							for i in range(len(obj)):
+								self.stockSymbolList.append(obj2[i])
 			mail.store(mail_ids.decode('utf-8').replace(' ',','),'+FLAGS','\Seen')
 			print('All ticks are copied')
 			print(self.stockSymbolList)
