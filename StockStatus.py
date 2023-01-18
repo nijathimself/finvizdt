@@ -317,6 +317,7 @@ class StockStatusBot(object):
 
 		
 		
+		
 		try:
 			high = df['high']
 			low = df['low']
