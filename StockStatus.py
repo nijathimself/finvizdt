@@ -347,10 +347,10 @@ class StockStatusBot(object):
 			except:
 				pass
 		
-		print('CHECK')
-		print(some_symbol)
-		print(df.iloc[0])
-		print('CHECK END')
+		#print('CHECK')
+		#print(some_symbol)
+		#print(df.iloc[0])
+		#print('CHECK END')
 
 		df_new=self.ST(df)
 		final_lowerband=df_new[0]
