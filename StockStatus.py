@@ -38,6 +38,10 @@ import email
 
 import yfinance as yf
 
+class madeupintervalobj:
+	def __init__(self, value):
+		self.value = value
+
 class StockStatusBot(object):
 	"""
 	class will scrape data from Imail Inbox after login
@@ -50,10 +54,6 @@ class StockStatusBot(object):
 	tv0.token="eyJhbGciOiJSUzUxMiIsImtpZCI6IkdaeFUiLCJ0eXAiOiJKV1QifQ.eyJ1c2VyX2lkIjoyMTM0NjYzLCJleHAiOjE2NzQwNTM5NTAsImlhdCI6MTY3NDAzOTU1MCwicGxhbiI6InByb19wcmVtaXVtIiwiZXh0X2hvdXJzIjoxLCJwZXJtIjoiYW1leCxjYm90LGNib3RfbWluaSxjbWUsY21lLWZ1bGwsY21lX21pbmksY29tZXgsY29tZXhfbWluaSxuYXNkYXEsbmFzZGFxX2dpZHMsbnltZXgsbnltZXhfbWluaSxueXNlLGx1eHNlX2RseSIsInN0dWR5X3Blcm0iOiJQVUI7T3BtV3NabWhHNFQ4QnN6TkFBUmozTVFPc0dRSzU4ZngsUFVCO2ZlMWJkZWFiMDA2YjQ4MTM4ZGNkZTM1ZWZmYmFjMGNmLFBVQjtZdGd5ckwzU2pwVThMM09YSkc5em5STFI2ZkxuVnlZWSxQVUI7YjI2ZjY1YzMyYWUzNDU1YjhkNzgzN2I4NjZmNDJiZTksdHYtdm9sdW1lYnlwcmljZSxQVUI7NjI5MzM2YjhiYTJlNGQ0NDlmZjkxMTMwOGYwNTUyOTQsdHYtcHJvc3R1ZGllcyxQVUI7cXNFbEIzT0kyVVA0bUl2V0ZTRVhMazlCSDJCY0RTdjMsdHYtY2hhcnRwYXR0ZXJucyxQVUI7Y1hvTFJKc1ZxUTFuZXg5VGNrc21wSEZGb2RhTGdBTDQsUFVCOzhrSDZVNWRPcEJweWZZNXpIY3NNYWxRVXRsMGlQdzhHLFBVQjsyMTJjNGVkYmZlMWM0MDU2YjJhM2YyMWYyMzg2YmU5ZiIsIm1heF9zdHVkaWVzIjoyNSwibWF4X2Z1bmRhbWVudGFscyI6MCwibWF4X2NoYXJ0cyI6OCwibWF4X2FjdGl2ZV9hbGVydHMiOjQwMCwibWF4X3N0dWR5X29uX3N0dWR5IjoyNH0.S0wxDL7c1NV5H477QEgMAdVb0HejdwBYfqpeFhWjHXrlMED8AT-UJJ3ozKUGyqZYVW0yVvrYzCEdbabYGXnQWKAoXEnz2lZsgU--0yHNZUp3R5yjCEnDcVkk0GLqSrKIFsYhuGzavL2sK6bY9gGrHiggzC2ADU6RlzeVz6SvkpI"
 	print('______BEGIN222222222____')
 
-	class madeupintervalobj:
-		def __init__(self, value):
-			self.value = value
-	x2D=madeupintervalobj('2D')
 	x10W=madeupintervalobj('10W')
 
 	
@@ -304,6 +304,7 @@ class StockStatusBot(object):
 			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_weekly, n_bars=500, extended_session=False)
 		elif intrval=="2d":
 			print("___________________________________________________!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  ",x2D.value)
+			x2D=madeupintervalobj('2D')
 			df=tv.get_hist(some_symbol, exchange=exch, interval = x2D, n_bars=500, extended_session=False)
 		elif intrval=="10weeks":
 			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_daily, n_bars=5000, extended_session=False)
@@ -328,6 +329,7 @@ class StockStatusBot(object):
 				elif intrval=="1d":
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_daily, n_bars=500, extended_session=False)
 				elif intrval=="2d":
+					x2D=madeupintervalobj('2D')
 					print("___________________________________________________!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  ",x2D.value)
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = x2D, n_bars=500, extended_session=False)
 				elif intrval=="1w":
