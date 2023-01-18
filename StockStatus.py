@@ -303,8 +303,8 @@ class StockStatusBot(object):
 		elif intrval=="1w":
 			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_weekly, n_bars=500, extended_session=False)
 		elif intrval=="2d":
-			print("___________________________________________________!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  ",x2D.value)
 			x2D=madeupintervalobj('2D')
+			print("___________________________________________________!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  ",x2D.value)
 			df=tv.get_hist(some_symbol, exchange=exch, interval = x2D, n_bars=500, extended_session=False)
 		elif intrval=="10weeks":
 			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_daily, n_bars=5000, extended_session=False)
@@ -317,7 +317,7 @@ class StockStatusBot(object):
 
 		
 		
-		
+
 		try:
 			high = df['high']
 			low = df['low']
