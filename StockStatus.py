@@ -274,8 +274,11 @@ class StockStatusBot(object):
 		#df = yf.download(some_symbol, start='2022-03-11', end='2022-11-11', interval="1wk")
 		username = 'trader989'
 		password = '$Palta646'
+		print('______BEGIN____')
 		tv = TvDatafeed(username, password)
+		print('______BEGIN222222222____')
 		exch=tv.search_symbol(some_symbol)[0]['exchange']
+		print('______END____')
 
 		if len(set(exch.split()).intersection(set(american)))==0:
 			for i in range(len(tv.search_symbol(some_symbol))):
@@ -307,6 +310,7 @@ class StockStatusBot(object):
 				prefix=tv.search_symbol(some_symbol)[0]['prefix']
 				df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_daily, n_bars=5000, extended_session=False)
 				df=converter(df)
+
 		
 		
 		try:
@@ -570,7 +574,7 @@ class StockStatusBot(object):
 			print(signal_4hr, end = ' ')
 			print(signal_1d, end = ' ')
 			print(signal_1w, end = ' ')
-			print(signal_2d, end = ' ')
+			print("signal_2d:",signal_2d, "||||",end = ' ')
 			print(signal_10weeks)
 			#signal_4hr=="Sell" or
 			if  signal_1d=="Sell" or signal_1w=="Sell" or signal_10weeks=="Sell":
