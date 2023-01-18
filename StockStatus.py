@@ -594,13 +594,9 @@ class StockStatusBot(object):
 			#signal_4hr=="Sell" or
 			if  signal_1d=="Sell" or signal_1w=="Sell" or signal_10weeks=="Sell":
 				infolist.append(stockSymbol)
-			else:
-				continue
 
 			if  signal_2d=="Buy":
 				infolist3.append(stockSymbol)
-			else:
-				continue
 
 		print("______________________")
 		print("______________________")
