@@ -600,7 +600,7 @@ class StockStatusBot(object):
 
 		print("______________________")
 		print("______________________")
-		print("BUY INFOLIST3=",infolist3)
+		print("BUY INFOLIST3=", infolist3)
 		print("______________________")
 		print("______________________")
 
