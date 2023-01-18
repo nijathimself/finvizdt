@@ -302,16 +302,15 @@ class StockStatusBot(object):
 			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_weekly, n_bars=500, extended_session=False)
 		elif intrval=="2d":
 			x2D=madeupintervalobj('2D')
-			print("___________________________________________________!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  ",x2D.value)
 			df=tv.get_hist(some_symbol, exchange=exch, interval = x2D, n_bars=500, extended_session=False)
 		elif intrval=="10weeks":
-			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_daily, n_bars=5000, extended_session=False)
-			try:
-				df=converter(df)
-			except:
-				prefix=tv.search_symbol(some_symbol)[0]['prefix']
-				df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_daily, n_bars=5000, extended_session=False)
-				df=converter(df)
+			df=tv.get_hist(some_symbol, exchange=exch, interval = x10W, n_bars=500, extended_session=False)
+			# try:
+			# 	df=converter(df)
+			# except:
+			# 	prefix=tv.search_symbol(some_symbol)[0]['prefix']
+			# 	df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_daily, n_bars=5000, extended_session=False)
+			# 	df=converter(df)
 
 		
 		
@@ -329,10 +328,11 @@ class StockStatusBot(object):
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_daily, n_bars=500, extended_session=False)
 				elif intrval=="2d":
 					x2D=madeupintervalobj('2D')
-					print("___________________________________________________!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!  ",x2D.value)
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = x2D, n_bars=500, extended_session=False)
 				elif intrval=="1w":
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_weekly, n_bars=500, extended_session=False)
+				elif intrval=="10weeks":
+					df=tv.get_hist(some_symbol, exchange=prefix, interval = x10W, n_bars=500, extended_session=False)
 				
 				high = df['high']
 				low = df['low']
@@ -340,6 +340,10 @@ class StockStatusBot(object):
 			except:
 				pass
 		
+		print('CHECK')
+		print(some_symbol)
+		print(df.iloc[0])
+		print('CHECK END')
 
 		df_new=self.ST(df)
 		final_lowerband=df_new[0]
@@ -564,11 +568,10 @@ class StockStatusBot(object):
 				signal_10weeks=self.Supertrend(stockSymbol,"10weeks")
 			except:
 				signal_10weeks=""
-			# try:
-			
-			signal_2d=self.Supertrend(stockSymbol,"2d")
-			# except:
-			# 	signal_2d=""
+			try:
+				signal_2d=self.Supertrend(stockSymbol,"2d")
+			except:
+				signal_2d=""
 			try:
 				if stockSymbol in docfile_list:
 					infolist2.append(stockSymbol)
@@ -629,6 +632,28 @@ class StockStatusBot(object):
 			msg = EmailMessage()
 			msg.set_content(mail_content)
 			msg['Subject'] = 'Cross referenced with doc file'
+			msg['From'] = 'high.risk.stocks@gmail.com'
+			recipients = ['high.risk.stocks@gmail.com', 'mike@mihfinancial.ca']
+			msg['To'] = ", ".join(recipients)
+			# Send the message via our own SMTP server.
+			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+			server.login("high.risk.stocks@gmail.com", "gnxzvixizpfqdhhj")
+			print("SUCCESS2 at log into high.risk.stocks")
+			server.send_message(msg)
+			
+			print('___exited if block2___')
+			
+			server.quit()
+		
+		if infolist3!=[]:
+			infolist3=list(set(infolist3))
+			mail_content = "Stock Symbol\n"
+			for sym in infolist3:
+				mail_content += f"{sym}\n"
+			print('___entered if block___')
+			msg = EmailMessage()
+			msg.set_content(mail_content)
+			msg['Subject'] = 'Buy signal for 2D timeframe'
 			msg['From'] = 'high.risk.stocks@gmail.com'
 			recipients = ['high.risk.stocks@gmail.com', 'mike@mihfinancial.ca']
 			msg['To'] = ", ".join(recipients)
