@@ -35,7 +35,6 @@ from googleapiclient.discovery import build
 import os.path
 import base64
 import email
-
 import yfinance as yf
 
 class madeupintervalobj:
