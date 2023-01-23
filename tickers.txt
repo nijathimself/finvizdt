@@ -27,6 +27,8 @@ gmbl
 sidu
 ensv
 gobq
+STAF
+SONN
 ****
 LSTA
 EMBK
