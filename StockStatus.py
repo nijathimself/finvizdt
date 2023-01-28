@@ -309,7 +309,7 @@ class StockStatusBot(object):
 			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_weekly, n_bars=500, extended_session=False)
 		elif intrval=="2d":
 			x2D=madeupintervalobj('2D')
-			df=tv.get_hist(some_symbol, exchange=exch, interval = x2D, n_bars=500, extended_session=False)
+			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_weekly, n_bars=500, extended_session=False)
 		elif intrval=="10weeks":
 			df=tv.get_hist(some_symbol, exchange=exch, interval = x10W, n_bars=500, extended_session=False)
 			# try:
