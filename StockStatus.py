@@ -335,7 +335,7 @@ class StockStatusBot(object):
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_daily, n_bars=500, extended_session=False)
 				elif intrval=="2d":
 					x2D=madeupintervalobj('2D')
-					df=tv.get_hist(some_symbol, exchange=prefix, interval = x2D, n_bars=500, extended_session=False)
+					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_weekly, n_bars=500, extended_session=False)
 				elif intrval=="1w":
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_weekly, n_bars=500, extended_session=False)
 				elif intrval=="10weeks":
@@ -656,7 +656,7 @@ class StockStatusBot(object):
 			print('___entered if block___')
 			msg = EmailMessage()
 			msg.set_content(mail_content)
-			msg['Subject'] = 'Buy signal for 2D timeframe'
+			msg['Subject'] = 'Buy signal for 1W timeframe'
 			msg['From'] = 'high.risk.stocks@gmail.com'
 			recipients = ['high.risk.stocks@gmail.com', 'mike@mihfinancial.ca']
 			msg['To'] = ", ".join(recipients)
