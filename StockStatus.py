@@ -347,10 +347,6 @@ class StockStatusBot(object):
 			except:
 				pass
 		
-		#print('CHECK')
-		#print(some_symbol)
-		#print(df.iloc[0])
-		#print('CHECK END')
 
 		df_new=self.ST(df)
 		final_lowerband=df_new[0]
@@ -371,7 +367,7 @@ class StockStatusBot(object):
 			else:
 				supertrend_signal="Mixed"
 		except:
-			print('problems at line 349')
+			print('problems at line 370')
 
 		return supertrend_signal
 
@@ -546,6 +542,7 @@ class StockStatusBot(object):
 		infolist = []
 		infolist2 = []
 		infolist3 = []
+		infolist4 = []
 
 		docfile_list=[]
 		with open("tickers.txt", "r") as crossref_tickers:
@@ -582,10 +579,7 @@ class StockStatusBot(object):
 				signal_2d=self.Supertrend(stockSymbol,"2d")
 			except:
 				signal_2d=""
-			try:
-				signal_1w_Buy=self.Supertrend(stockSymbol,"2d")
-			except:
-				signal_1w_Buy
+
 			try:
 				if stockSymbol in docfile_list:
 					infolist2.append(stockSymbol)
@@ -612,7 +606,8 @@ class StockStatusBot(object):
 
 		print("______________________")
 		print("______________________")
-		print("BUY INFOLIST3=", infolist3)
+		print("BUY 1wBuy INFOLIST3=", infolist3)
+		print("BUY 2dBuy INFOLIST4=", infolist4)
 		print("______________________")
 		print("______________________")
 
@@ -676,7 +671,7 @@ class StockStatusBot(object):
 			# Send the message via our own SMTP server.
 			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
 			server.login("high.risk.stocks@gmail.com", "gnxzvixizpfqdhhj")
-			print("SUCCESS2 at log into high.risk.stocks")
+			print("SUCCESS3 at log into high.risk.stocks")
 			server.send_message(msg)
 			
 			print('___exited if block2___')
@@ -699,7 +694,7 @@ class StockStatusBot(object):
 			# Send the message via our own SMTP server.
 			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
 			server.login("high.risk.stocks@gmail.com", "gnxzvixizpfqdhhj")
-			print("SUCCESS2 at log into high.risk.stocks")
+			print("SUCCESS4 at log into high.risk.stocks")
 			server.send_message(msg)
 			
 			print('___exited if block2___')
