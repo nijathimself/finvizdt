@@ -29,8 +29,10 @@ ensv
 gobq
 STAF
 SONN
-tenx
-dgly
+DGLY
+TENX
+IONM
+ZVSA
 ****
 LSTA
 EMBK
