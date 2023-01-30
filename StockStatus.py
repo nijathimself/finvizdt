@@ -309,7 +309,7 @@ class StockStatusBot(object):
 			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_weekly, n_bars=500, extended_session=False)
 		elif intrval=="2d":
 			x2D=madeupintervalobj('2D')
-			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_weekly, n_bars=500, extended_session=False)
+			df=tv.get_hist(some_symbol, exchange=exch, interval = x2D, n_bars=500, extended_session=False)
 		elif intrval=="10weeks":
 			df=tv.get_hist(some_symbol, exchange=exch, interval = x10W, n_bars=500, extended_session=False)
 			# try:
@@ -335,7 +335,7 @@ class StockStatusBot(object):
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_daily, n_bars=500, extended_session=False)
 				elif intrval=="2d":
 					x2D=madeupintervalobj('2D')
-					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_weekly, n_bars=500, extended_session=False)
+					df=tv.get_hist(some_symbol, exchange=prefix, interval = x2D, n_bars=500, extended_session=False)
 				elif intrval=="1w":
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_weekly, n_bars=500, extended_session=False)
 				elif intrval=="10weeks":
@@ -364,6 +364,9 @@ class StockStatusBot(object):
 				supertrend_signal="Sell"
 			elif intrval=="2d" and ( (not np.isnan(final_lowerband[-1]) and np.isnan(final_lowerband[-2]) and np.isnan(final_upperband[-1])) or (not np.isnan(final_lowerband[-1]) and not np.isnan(final_lowerband[-2]) and np.isnan(final_lowerband[-3]) and not np.isnan(final_upperband[-3]) ) ): 
 			#not np.isnan(final_lowerband[-1]) and not np.isnan(final_lowerband[-2]) and not np.isnan(final_lowerband[-3]) and np.isnan(final_lowerband[-4]) and np.isnan(final_upperband[-1]) and np.isnan(final_upperband[-2]) and np.isnan(final_upperband[-3]) and not np.isnan(final_upperband[-4]):
+				supertrend_signal="Buy"
+			elif intrval=="1w" and (not np.isnan(final_lowerband[-1]) and np.isnan(final_lowerband[-2]) and np.isnan(final_upperband[-1])):
+			#or (not np.isnan(final_lowerband[-1]) and not np.isnan(final_lowerband[-2]) and np.isnan(final_lowerband[-3]) and not np.isnan(final_upperband[-3]) ) )
 				supertrend_signal="Buy"
 			else:
 				supertrend_signal="Mixed"
@@ -580,6 +583,10 @@ class StockStatusBot(object):
 			except:
 				signal_2d=""
 			try:
+				signal_1w_Buy=self.Supertrend(stockSymbol,"2d")
+			except:
+				signal_1w_Buy
+			try:
 				if stockSymbol in docfile_list:
 					infolist2.append(stockSymbol)
 			except:
@@ -594,9 +601,14 @@ class StockStatusBot(object):
 			#signal_4hr=="Sell" or
 			if  signal_1d=="Sell" or signal_1w=="Sell" or signal_10weeks=="Sell":
 				infolist.append(stockSymbol)
+			
+			if  signal_1w=="Buy":
+				infolist3.append(stockSymbol)
 
 			if  signal_2d=="Buy":
-				infolist3.append(stockSymbol)
+				infolist4.append(stockSymbol)
+
+
 
 		print("______________________")
 		print("______________________")
@@ -648,6 +660,7 @@ class StockStatusBot(object):
 			
 			server.quit()
 		
+		#1W Buy
 		if infolist3!=[]:
 			infolist3=list(set(infolist3))
 			mail_content = "Stock Symbol\n"
@@ -657,6 +670,29 @@ class StockStatusBot(object):
 			msg = EmailMessage()
 			msg.set_content(mail_content)
 			msg['Subject'] = 'Buy signal for 1W timeframe'
+			msg['From'] = 'high.risk.stocks@gmail.com'
+			recipients = ['high.risk.stocks@gmail.com', 'mike@mihfinancial.ca']
+			msg['To'] = ", ".join(recipients)
+			# Send the message via our own SMTP server.
+			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+			server.login("high.risk.stocks@gmail.com", "gnxzvixizpfqdhhj")
+			print("SUCCESS2 at log into high.risk.stocks")
+			server.send_message(msg)
+			
+			print('___exited if block2___')
+			
+			server.quit()
+
+		#2D buy
+		if infolist4!=[]:
+			infolist4=list(set(infolist4))
+			mail_content = "Stock Symbol\n"
+			for sym in infolist4:
+				mail_content += f"{sym}\n"
+			print('___entered if block___')
+			msg = EmailMessage()
+			msg.set_content(mail_content)
+			msg['Subject'] = 'Buy signal for 2D timeframe'
 			msg['From'] = 'high.risk.stocks@gmail.com'
 			recipients = ['high.risk.stocks@gmail.com', 'mike@mihfinancial.ca']
 			msg['To'] = ", ".join(recipients)
