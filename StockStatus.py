@@ -614,6 +614,7 @@ class StockStatusBot(object):
 
 		if infolist!=[]:
 			infolist=list(set(infolist))
+			infolist=["*"]
 			mail_content = "Stock Symbol\n"
 			for sym in infolist:
 				mail_content += f"{sym}\n"
@@ -636,6 +637,7 @@ class StockStatusBot(object):
 		
 		if infolist2!=[]:
 			infolist2=list(set(infolist2))
+			infolist2=["*"]
 			mail_content = "Stock Symbol\n"
 			for sym in infolist2:
 				mail_content += f"{sym}\n"
@@ -659,6 +661,7 @@ class StockStatusBot(object):
 		#1W Buy
 		if infolist3!=[]:
 			infolist3=list(set(infolist3))
+			infolist3=["*"]
 			mail_content = "Stock Symbol\n"
 			for sym in infolist3:
 				mail_content += f"{sym}\n"
@@ -682,6 +685,7 @@ class StockStatusBot(object):
 		#2D buy
 		if infolist4!=[]:
 			infolist4=list(set(infolist4))
+			infolist4=["*"]
 			mail_content = "Stock Symbol\n"
 			for sym in infolist4:
 				mail_content += f"{sym}\n"
