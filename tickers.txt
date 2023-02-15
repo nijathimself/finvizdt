@@ -1,4 +1,6 @@
 EDBL
+STBX
+NOGN
 TNON
 sint
 qnrx
