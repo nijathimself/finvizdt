@@ -5,7 +5,7 @@ TNON
 sint
 qnrx
 gmvd
-dgly
+
 amv
 rnaz
 BTMD
@@ -39,7 +39,7 @@ ensv
 gobq
 STAF
 SONN
-DGLY
+
 TENX
 IONM
 gmvd
