@@ -36,7 +36,7 @@ DRMA
 
 
 CREG
-PSHG
+
 gmbl
 sidu
 ensv
