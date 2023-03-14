@@ -1,4 +1,7 @@
-cing
+CING
+DRMA
+TORO
+ALLR
 CYTO
 COEP
 STBX
