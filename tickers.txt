@@ -16,8 +16,8 @@ WINT
 drma
 rnaz
 BTMD
-gnln
-maia
+GNLN
+MAIA
 BTTX
 NVFY
 LGMK
@@ -33,9 +33,9 @@ pbla
 CEMI
 SAI
 OP
-rsls
+RSLS
 MRM
-DRMA
+
 
 
 CREG
