@@ -582,7 +582,7 @@ class StockStatusBot(object):
 				signal_2d=""
 
 			try:
-				if stockSymbol in docfile_list:
+				if ( (stockSymbol.lower() in docfile_list) or (stockSymbol.upper() in docfile_list) ):
 					infolist2.append(stockSymbol)
 			except:
 				pass
