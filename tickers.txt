@@ -13,13 +13,13 @@ STBX
 STBX
 NOGN
 TNON
-sint
-qnrx
-gmvd
+SINT
+QNRX
+
 COEP
 WINT
-drma
-rnaz
+DRMA
+RNAZ
 BTMD
 GNLN
 MAIA
@@ -34,7 +34,7 @@ REVB
 REED
 
 PTE
-pbla
+PBLA
 CEMI
 SAI
 OP
@@ -45,17 +45,17 @@ MRM
 
 CREG
 
-gmbl
-sidu
-ensv
-gobq
+GMBL
+SIDU
+ENSV
+GOBQ
 STAF
 SONN
 
 
 IONM
-gmvd
-oncs
+
+ONCS
 BEAT
 
 
