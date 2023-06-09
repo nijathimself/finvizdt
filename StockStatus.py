@@ -300,8 +300,9 @@ class StockStatusBot(object):
 					print('No American stock found')
 					continue
 
-
-		if intrval=="4hr":
+		if intrval=="1hr":
+			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_1_hour, n_bars=200, extended_session=True)
+		elif intrval=="4hr":
 			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_4_hour, n_bars=200, extended_session=True)
 		elif intrval=="1d":
 			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_daily, n_bars=500, extended_session=False)
@@ -329,7 +330,9 @@ class StockStatusBot(object):
 		except:
 			prefix=tv.search_symbol(some_symbol)[0]['prefix']
 			try:
-				if intrval=="4hr":
+				if intrval=="1hr":
+					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_1_hour, n_bars=300, extended_session=True)
+				elif intrval=="4hr":
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_4_hour, n_bars=300, extended_session=True)
 				elif intrval=="1d":
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_daily, n_bars=500, extended_session=False)
@@ -365,6 +368,11 @@ class StockStatusBot(object):
 			elif intrval=="1w" and (not np.isnan(final_lowerband[-1]) and np.isnan(final_lowerband[-2]) and np.isnan(final_upperband[-1])):
 			#or (not np.isnan(final_lowerband[-1]) and not np.isnan(final_lowerband[-2]) and np.isnan(final_lowerband[-3]) and not np.isnan(final_upperband[-3]) ) )
 				supertrend_signal="Buy"
+			# New buy logic for 1hr	
+			elif intrval=="1hr" and np.isnan(final_upperband[-1]) and np.isnan(final_upperband[-2]) and np.isnan(final_upperband[-3]) and not np.isnan(final_upperband[-4]) and not np.isnan(final_lowerband[-1]) and not np.isnan(final_lowerband[-2]) and not np.isnan(final_lowerband[-3]) and np.isnan(final_lowerband[-4]):
+				supertrend_signal="Buy"
+			elif intrval=="1hr" and (not np.isnan(final_lowerband[-1]) and np.isnan(final_lowerband[-2]) and not np.isnan(final_upperband[-2])) or (not np.isnan(final_lowerband[-2]) and np.isnan(final_lowerband[-3]) and not np.isnan(final_upperband[-3])) or (not np.isnan(final_lowerband[-3]) and np.isnan(final_lowerband[-4]) and not np.isnan(final_upperband[-4])) or (not np.isnan(final_lowerband[-3]) and not np.isnan(final_lowerband[-4]) and (abs(final_lowerband[-3]-final_lowerband[-4])<0.001) and not np.isnan(final_upperband[-5])) or (not np.isnan(final_lowerband[-3]) and not np.isnan(final_lowerband[-4]) and not np.isnan(final_lowerband[-5]) and (abs(final_lowerband[-3]-final_lowerband[-4])<0.001) and (abs(final_lowerband[-4]-final_lowerband[-5])<0.001) and not np.isnan(final_upperband[-6])) or (not np.isnan(final_lowerband[-3]) and not np.isnan(final_lowerband[-4]) and not np.isnan(final_lowerband[-5]) and not np.isnan(final_lowerband[-6]) and (abs(final_lowerband[-3]-final_lowerband[-4])<0.001) and (abs(final_lowerband[-4]-final_lowerband[-5])<0.001) and (abs(final_lowerband[-5]-final_lowerband[-6])<0.001) and not np.isnan(final_upperband[-7])):
+				supertrend_signal="Buy"	
 			else:
 				supertrend_signal="Mixed"
 		except:
@@ -559,6 +567,7 @@ class StockStatusBot(object):
 
 		for stockSymbol in stockSymbolList:
 			print("stockSymbol Name:", stockSymbol)
+			# Adding new 1 hr
 			try:
 				signal_4hr=self.Supertrend(stockSymbol,"4hr")
 			except:
@@ -582,7 +591,7 @@ class StockStatusBot(object):
 				signal_2d=""
 
 			try:
-				if ( (stockSymbol.lower() in docfile_list) or (stockSymbol.upper() in docfile_list) ):
+				if ( (stockSymbol.lower() in docfile_list) or (stockSymbol.upper() in docfile_list) ):		
 					infolist2.append(stockSymbol)
 			except:
 				pass
