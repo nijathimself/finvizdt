@@ -36,6 +36,34 @@ import base64
 import email
 import yfinance as yf
 
+# New Twilio logic
+from twilio.rest import Client
+account_sid = 'ACec6c5a56a914075e0124b2fd8c088b1b'
+auth_token = 'ea6b026ceb2a7bf887f292a324e4ada3'
+client = Client(account_sid, auth_token)
+from_ = "12345013256"
+to = "+16046135789"
+def send_sms(from_=from_, to=to, body="test"):
+    """
+    Sends an SMS message using the Twilio API.
+    Args:
+        from_ (str): The phone number or alphanumeric sender ID.
+        to (str): The recipient's phone number.
+        body (str): The text message to be sent.
+    Returns:
+        None
+    Raises:
+        TwilioException: If there is an error while sending the SMS.
+    """
+    message = client.messages \
+                    .create(
+                        body=body,
+                        from_=from_,
+                        to=to
+                    )
+
+    print(message.sid)
+	
 class madeupintervalobj:
 	def __init__(self, value):
 		self.value = value
