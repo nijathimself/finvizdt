@@ -43,6 +43,7 @@ auth_token = 'ea6b026ceb2a7bf887f292a324e4ada3'
 client = Client(account_sid, auth_token)
 from_ = "12345013256"
 to = "+16046135789"
+
 def send_sms(from_=from_, to=to, body="test"):
     """
     Sends an SMS message using the Twilio API.
@@ -736,6 +737,10 @@ class StockStatusBot(object):
 			server.send_message(msg)
 			
 			print('___exited if block2___')
+
+			# Send SMS
+			sms_text = f'Cross referenced with doc file: {mail_content}'
+			send_sms(from_=from_, to=to, body=sms_text)
 			
 			server.quit()
 		
