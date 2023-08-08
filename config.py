@@ -41,7 +41,7 @@ class Config(object):
 		options.add_argument("--incognito")
 		options.add_argument("--headless")
 		#options.headless = False
-		self.driver = webdriver.Chrome(ChromeDriverManager().install(),chrome_options=options,desired_capabilities=capa)
+		self.driver = webdriver.Chrome(ChromeDriverManager(version="115.0.5790").install(),chrome_options=options,desired_capabilities=capa)
 		#self.driver = webdriver.Chrome(executable_path=path_chrome,options=options,desired_capabilities=capa)
 		#self.driver = webdriver.Chrome(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install(),options=options,desired_capabilities=capa)
 		# self.driver.delete_all_cookies()
