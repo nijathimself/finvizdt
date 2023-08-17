@@ -43,10 +43,10 @@ class Config(object):
 		#options.headless = False
 		
 
-		#options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-		print("version:::::::::", os.environ.get("CHROMEDRIVER_VERSION "))
+		options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+		service = Service(ChromeDriverManager(version="114.0.5735.90").install())
 		#service = Service(executable_path=str(os.environ.get('CHROMEDRIVER_PATH')))
-		self.driver = webdriver.Chrome(ChromeDriverManager(version="114.0.5735.90").install(), options=options)
+		self.driver = webdriver.Chrome(service=service, options=options)
 		#self.driver = webdriver.Chrome(service=service, options=options)
 		#self.driver = webdriver.Chrome(ChromeDriverManager().install(),chrome_options=options,desired_capabilities=capa)
 		#self.driver = webdriver.Chrome(executable_path=path_chrome,options=options,desired_capabilities=capa)
