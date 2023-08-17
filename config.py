@@ -45,7 +45,7 @@ class Config(object):
 		
 
 		options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-		service = Service()
+		service = Service(ChromeDriverManager().install())
 		#service = Service(executable_path=str(os.environ.get('CHROMEDRIVER_PATH')))
 		#self.driver = Driver(browser="chrome", headless=False, incognito=True, no_sandbox=True)
 		self.driver = webdriver.Chrome(service=service, options=options)
