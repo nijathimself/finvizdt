@@ -8,6 +8,7 @@ from selenium import webdriver
 from webdriver_manager.utils import ChromeType
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+from seleniumbase import Driver
 import logging
 import sys, os
 
@@ -46,7 +47,7 @@ class Config(object):
 		options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
 		service = Service()
 		#service = Service(executable_path=str(os.environ.get('CHROMEDRIVER_PATH')))
-		self.driver = webdriver.Chrome(service=service, options=options)
+		self.driver = Driver(browser="chrome", headless=False, incognito=True, no_sandbox=True)
 		#self.driver = webdriver.Chrome(service=service, options=options)
 		#self.driver = webdriver.Chrome(ChromeDriverManager().install(),chrome_options=options,desired_capabilities=capa)
 		#self.driver = webdriver.Chrome(executable_path=path_chrome,options=options,desired_capabilities=capa)
