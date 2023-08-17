@@ -1,6 +1,3 @@
-2022-06-26 15:50:25,716 
-
-2022-06-26 15:50:25,716 ====== WebDriver manager ======
-2022-06-26 15:50:25,755 Current google-chrome version is 101.0.4951
-2022-06-26 15:50:25,756 Get LATEST driver version for 101.0.4951
-2022-06-26 15:50:26,152 Driver [/home/keshav/.wdm/drivers/chromedriver/linux64/101.0.4951.41/chromedriver] found in cache
+2023-08-17 13:00:10,415 error while signin
+2023-08-17 13:00:10,416 you are using nologin method, data you access may be limited
+2023-08-17 13:00:18,474 The version of chrome cannot be detected. Trying with latest driver version
