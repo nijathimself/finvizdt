@@ -50,4 +50,4 @@ zipp==3.6.0
 yfinance==0.1.85
 tvdatafeed @ git+https://github.com/rongardF/tvdatafeed
 twilio==8.5.0
-seleniumbase
+seleniumbase==4.17.7
