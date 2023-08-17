@@ -8,7 +8,7 @@ from selenium import webdriver
 #from webdriver_manager.utils import ChromeType
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
-from seleniumbase import Driver
+#from seleniumbase import Driver
 import logging
 import sys, os
 
