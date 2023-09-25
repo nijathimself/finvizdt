@@ -626,45 +626,6 @@ class StockStatusBot(object):
 
 			try:
 				if ( (stockSymbol.lower() in docfile_list) or (stockSymbol.upper() in docfile_list) ):	
-					# New logic
-					stockSymbol = stockSymbol.upper()
-					# Check for buy signal
-					if signal_1hr == 'Buy':
-						# Get the one hour bar history
-						exch=tv.search_symbol(stockSymbol)[0]['exchange']
-						df = tv.get_hist(stockSymbol, exchange=exch, interval=Interval.in_1_hour, n_bars=200, extended_session=True)
-						vol = None
-						try:
-							vol = df['volume']
-						except:
-							prefix=tv.search_symbol(stockSymbol)[0]['prefix']
-							try:
-								df = tv.get_hist(stockSymbol, exchange=prefix, interval=Interval.in_1_hour, n_bars=200, extended_session=True)
-								vol = df['volume']
-							except:
-								pass
-						if vol is not None:
-							last_volume = vol.iloc[-1]
-							previous_volume = vol.iloc[-2]
-							print(f"{stockSymbol} 1hr volume, last={last_volume}, previous={previous}")
-							if previous_volume >= 10000:
-								# Send alert for the signal!
-								# For now we'll just use email, but eventually replace with a text message
-								try:
-									body = f"{stockSymbol} Doc file test buy signal, previous_vol={previous_volume}"
-									msg = EmailMessage()
-									msg.set_content(body)
-									msg['Subject'] = 'Cross Ref with Doc File: New Test'
-									msg['From'] = 'high.risk.stocks@gmail.com'
-									recipients = ['high.risk.stocks@gmail.com', 'mike@mihfinancial.ca']
-									msg['To'] = ", ".join(recipients)
-									# Send the message via our own SMTP server.
-									server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-									server.login("high.risk.stocks@gmail.com", "gnxzvixizpfqdhhj")
-									print("SUCCESS at log into high.risk.stocks")
-									server.send_message(msg)
-								except:
-									print('Error trying to send email notification')
 					infolist2.append(stockSymbol)
 			except:
 				pass
