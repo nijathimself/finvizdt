@@ -44,7 +44,7 @@ typing-extensions==3.10.0.0
 urllib3==1.26.5
 vine==5.0.0
 wcwidth==0.2.5
-webdriver-manager==3.4.2
+webdriver-manager @ git+https://github.com/nijathimself/webdriver-manager
 wrapt==1.14.1
 zipp==3.6.0
 yfinance==0.1.85
