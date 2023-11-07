@@ -21,7 +21,6 @@ import imaplib
 import smtplib
 import mailparser
 import os.path
-
 import smtplib
 from email.message import EmailMessage
 
