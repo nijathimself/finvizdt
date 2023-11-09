@@ -36,7 +36,7 @@ python-dotenv==0.20.0
 pytz==2021.1
 redis==4.3.1
 requests==2.26
-selenium==4.10.0
+selenium==4.11.2
 simplejson==3.17.6
 six==1.16.0
 soupsieve==2.2.1
