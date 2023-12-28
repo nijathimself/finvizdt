@@ -672,7 +672,7 @@ class StockStatusBot(object):
 			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
 			server.login("high.risk.stocks@gmail.com", "yedjzfcocljxmcxj")
 			print("SUCCESS at log into high.risk.stocks")
-			#server.send_message(msg)
+			server.send_message(msg)
 			
 			print('___exited if block___')
 			
@@ -695,7 +695,7 @@ class StockStatusBot(object):
 			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
 			server.login("high.risk.stocks@gmail.com", "yedjzfcocljxmcxj")
 			print("SUCCESS2 at log into high.risk.stocks")
-			#server.send_message(msg)
+			server.send_message(msg)
 			
 			print('___exited if block2___')
 
@@ -723,7 +723,7 @@ class StockStatusBot(object):
 			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
 			server.login("high.risk.stocks@gmail.com", "yedjzfcocljxmcxj")
 			print("SUCCESS3 at log into high.risk.stocks")
-			#server.send_message(msg)
+			server.send_message(msg)
 			
 			print('___exited if block2___')
 			
@@ -747,7 +747,7 @@ class StockStatusBot(object):
 			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
 			server.login("high.risk.stocks@gmail.com", "yedjzfcocljxmcxj")
 			print("SUCCESS4 at log into high.risk.stocks")
-			#server.send_message(msg)
+			server.send_message(msg)
 			
 			print('___exited if block2___')
 			
