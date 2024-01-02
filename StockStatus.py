@@ -409,9 +409,79 @@ class StockStatusBot(object):
 
 		return supertrend_signal
 
+	def Resistance(self,some_symbol, tv=tv0):
+		american=["NASDAQ", "NYSE", "Arca", "OTC", "DJ", "SP", "CBOE", "CBOT", "CME GLOBEX", "COMEX", "NYMEX", "ICEUS", "FairX", "ECONOMY"]
+
+		exch=tv.search_symbol(some_symbol)[0]['exchange']
+
+		if len(set(exch.split()).intersection(set(american)))==0:
+			for i in range(len(tv.search_symbol(some_symbol))):
+				try:
+					exch=tv.search_symbol(some_symbol)[i]['exchange']
+					if exch in american:
+						break
+					else:
+						continue
+				except:
+					print('No American stock found')
+					continue
+
+		df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_weekly, n_bars=500, extended_session=False)
+		df=df[df.index > dateutil.parser.parse("2020-01-01")]
+
+		try:
+			today_open=df.iloc[-1]['open']
+			today_close=df.iloc[-1]['close']
+			today_max=max(today_open,today_close)
+
+			df_x=df.drop(df.tail(1).index,inplace=False)
+			close = df_x['close']
+			open = df_x['open']
+			volume = df_x['volume']
+
+			volume_spike=df_x['volume'].max()
+			volume_prev_day=df_x[df_x.index==df_x['volume'].shift(-1).idxmax()]['volume'][0]
+
+			spike_open=df_x[df_x['volume']==volume_spike]['open'][0]
+			spike_close=df_x[df_x['volume']==volume_spike]['close'][0]
+		except:
+			prefix=tv.search_symbol(some_symbol)[0]['prefix']
+			
+			try:
+				df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_weekly, n_bars=500, extended_session=False)
+				df=df[df.index > dateutil.parser.parse("2020-01-01")]
+				today_open=df.iloc[-1]['open']
+				today_close=df.iloc[-1]['close']
+				today_max=max(today_open,today_close)
+
+				df_x=df.drop(df.tail(1).index,inplace=False)
+				close = df_x['close']
+				open = df_x['open']
+				volume = df_x['volume']
+
+				volume_spike=df_x['volume'].max()
+				volume_prev_day=df_x[df_x.index==df_x['volume'].shift(-1).idxmax()]['volume'][0]
+				spike_open=df_x[df_x['volume']==volume_spike]['open'][0]
+				spike_close=df_x[df_x['volume']==volume_spike]['close'][0]
+			
+			except:
+				pass
 
 
+		try:
+			if round(volume_spike/volume_prev_day,0)>=50:
+				resistance=max(spike_open,spike_close)
+				if today_max>resistance:
+					resistance_crossed=True
+				else:
+					resistance_crossed=False
+			else:
+				resistance_crossed=False
+		except:
+			resistance_crossed=False
+			pass
 
+		return resistance_crossed
 
 
 	def Supertrend2(self, some_symbol, intrval):
@@ -581,6 +651,7 @@ class StockStatusBot(object):
 		infolist2 = []
 		infolist3 = []
 		infolist4 = []
+		infolist5 = []
 
 		docfile_list=[]
 		with open("tickers.txt", "r") as crossref_tickers:
@@ -629,6 +700,12 @@ class StockStatusBot(object):
 			except:
 				pass
 
+			try:
+				if self.Resistance(stockSymbol)==True:
+					infolist5.append(stockSymbol)
+			except:
+				pass
+
 			print(stockSymbol, end = ' ')
 			print(signal_4hr, end = ' ')
 			print(signal_1d, end = ' ')
@@ -654,6 +731,7 @@ class StockStatusBot(object):
 		print("BUY 2dBuy INFOLIST4=", infolist4)
 		print("______________________")
 		print("______________________")
+		print('Resistance crossed for:', infolist5)
 
 		if infolist!=[]:
 			infolist=list(set(infolist))
@@ -753,6 +831,29 @@ class StockStatusBot(object):
 			
 			server.quit()
 
+		#Resistance crossed notification
+		if infolist5!=[]:
+			infolist5=list(set(infolist5))
+			#infolist4=["*"]
+			mail_content = "Stock Symbol\n"
+			for sym in infolist5:
+				mail_content += f"{sym}\n"
+			print('___entered if block___')
+			msg = EmailMessage()
+			msg.set_content(mail_content)
+			msg['Subject'] = 'Resistance crossed signal for the following stocks'
+			msg['From'] = 'high.risk.stocks@gmail.com'
+			recipients = ['high.risk.stocks@gmail.com', 'mike@mihfinancial.ca']
+			msg['To'] = ", ".join(recipients)
+			# Send the message via our own SMTP server.
+			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+			server.login("high.risk.stocks@gmail.com", "yedjzfcocljxmcxj")
+			print("SUCCESS5 at log into high.risk.stocks")
+			server.send_message(msg)
+			
+			print('___exited if block2___')
+			
+			server.quit()
 
 		print("=======")
 
