@@ -107,7 +107,6 @@ class StockStatusBot(object):
 			status, summary = imap.login(self.MAIL_USERNAME, self.MAIL_PASSWORD)
 			if status == "OK":
 				print(summary)
-				print()
 		except imaplib.IMAP4.error as e:
 			print("Error logging into Mail",str(e))
 			sys.exit(0)  # Successful termination
