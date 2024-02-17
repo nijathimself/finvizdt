@@ -342,12 +342,12 @@ class StockStatusBot(object):
 			df=tv.get_hist(some_symbol, exchange=exch, interval = x2D, n_bars=500, extended_session=False)
 		elif intrval=="10weeks":
 			df=tv.get_hist(some_symbol, exchange=exch, interval = x10W, n_bars=500, extended_session=False)
-			# try:
-			# 	df=converter(df)
-			# except:
-			# 	prefix=tv.search_symbol(some_symbol)[0]['prefix']
-			# 	df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_daily, n_bars=5000, extended_session=False)
-			# 	df=converter(df)
+		elif intrval=="5hr_ExS":
+			x5H=madeupintervalobj('5H')
+			df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=500, extended_session=True)
+		elif intrval=="5hr_":
+			x5H=madeupintervalobj('5H')
+			df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=500, extended_session=False)
 
 		
 		
@@ -356,9 +356,10 @@ class StockStatusBot(object):
 			high = df['high']
 			low = df['low']
 			close = df['close']
+			open = df['open']
 		except:
-			prefix=tv.search_symbol(some_symbol)[0]['prefix']
 			try:
+				prefix=tv.search_symbol(some_symbol)[0]['prefix']
 				if intrval=="1hr":
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_1_hour, n_bars=300, extended_session=True)
 				elif intrval=="4hr":
@@ -372,10 +373,18 @@ class StockStatusBot(object):
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_weekly, n_bars=500, extended_session=False)
 				elif intrval=="10weeks":
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = x10W, n_bars=500, extended_session=False)
-				
+				elif intrval=="5hr_":
+					x5H=madeupintervalobj('5H')
+					df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=500, extended_session=False)
+				elif intrval=="5hr_ExS":
+					x5H=madeupintervalobj('5H')
+					df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=500, extended_session=True)
+
+
 				high = df['high']
 				low = df['low']
 				close = df['close']
+				open = df['open']
 			except:
 				pass
 		
@@ -384,28 +393,47 @@ class StockStatusBot(object):
 		final_lowerband=df_new[0]
 		final_upperband=df_new[1]
 		
-		supertrend_signal=""
-		try:
-			if np.isnan(final_lowerband[-1]) and np.isnan(final_lowerband[-2]) and np.isnan(final_lowerband[-3])  and not np.isnan(final_lowerband[-4]) and not np.isnan(final_upperband[-1]) and not np.isnan(final_upperband[-2]) and not np.isnan(final_upperband[-3]) and np.isnan(final_upperband[-4]):
-				supertrend_signal="Sell"
-			elif (not np.isnan(final_upperband[-1]) and np.isnan(final_upperband[-2]) and not np.isnan(final_lowerband[-2])) or (not np.isnan(final_upperband[-2]) and np.isnan(final_upperband[-3]) and not np.isnan(final_lowerband[-3])) or (not np.isnan(final_upperband[-3]) and np.isnan(final_upperband[-4]) and not np.isnan(final_lowerband[-4])) or (not np.isnan(final_upperband[-3]) and not np.isnan(final_upperband[-4]) and (abs(final_upperband[-3]-final_upperband[-4])<0.001) and not np.isnan(final_lowerband[-5])) or (not np.isnan(final_upperband[-3]) and not np.isnan(final_upperband[-4]) and not np.isnan(final_upperband[-5]) and (abs(final_upperband[-3]-final_upperband[-4])<0.001) and (abs(final_upperband[-4]-final_upperband[-5])<0.001) and not np.isnan(final_lowerband[-6])) or (not np.isnan(final_upperband[-3]) and not np.isnan(final_upperband[-4]) and not np.isnan(final_upperband[-5]) and not np.isnan(final_upperband[-6]) and (abs(final_upperband[-3]-final_upperband[-4])<0.001) and (abs(final_upperband[-4]-final_upperband[-5])<0.001) and (abs(final_upperband[-5]-final_upperband[-6])<0.001) and not np.isnan(final_lowerband[-7])):
-				supertrend_signal="Sell"
-			elif intrval=="2d" and (not np.isnan(final_lowerband[-1]) and not np.isnan(final_lowerband[-2]) and np.isnan(final_lowerband[-3]) and not np.isnan(final_upperband[-3]) ) : 
-			#(not np.isnan(final_lowerband[-1]) and np.isnan(final_lowerband[-2]) and np.isnan(final_upperband[-1])) or
-			#not np.isnan(final_lowerband[-1]) and not np.isnan(final_lowerband[-2]) and not np.isnan(final_lowerband[-3]) and np.isnan(final_lowerband[-4]) and np.isnan(final_upperband[-1]) and np.isnan(final_upperband[-2]) and np.isnan(final_upperband[-3]) and not np.isnan(final_upperband[-4]):
-				supertrend_signal="Buy"
-			elif intrval=="1w" and (not np.isnan(final_lowerband[-1]) and np.isnan(final_lowerband[-2]) and np.isnan(final_upperband[-1])):
-			#or (not np.isnan(final_lowerband[-1]) and not np.isnan(final_lowerband[-2]) and np.isnan(final_lowerband[-3]) and not np.isnan(final_upperband[-3]) ) )
-				supertrend_signal="Buy"
-			# New buy logic for 1hr	
-			elif intrval=="1hr" and np.isnan(final_upperband[-1]) and np.isnan(final_upperband[-2]) and np.isnan(final_upperband[-3]) and not np.isnan(final_upperband[-4]) and not np.isnan(final_lowerband[-1]) and not np.isnan(final_lowerband[-2]) and not np.isnan(final_lowerband[-3]) and np.isnan(final_lowerband[-4]):
-				supertrend_signal="Buy"
-			elif intrval=="1hr" and (not np.isnan(final_lowerband[-1]) and np.isnan(final_lowerband[-2]) and not np.isnan(final_upperband[-2])) or (not np.isnan(final_lowerband[-2]) and np.isnan(final_lowerband[-3]) and not np.isnan(final_upperband[-3])) or (not np.isnan(final_lowerband[-3]) and np.isnan(final_lowerband[-4]) and not np.isnan(final_upperband[-4])) or (not np.isnan(final_lowerband[-3]) and not np.isnan(final_lowerband[-4]) and (abs(final_lowerband[-3]-final_lowerband[-4])<0.001) and not np.isnan(final_upperband[-5])) or (not np.isnan(final_lowerband[-3]) and not np.isnan(final_lowerband[-4]) and not np.isnan(final_lowerband[-5]) and (abs(final_lowerband[-3]-final_lowerband[-4])<0.001) and (abs(final_lowerband[-4]-final_lowerband[-5])<0.001) and not np.isnan(final_upperband[-6])) or (not np.isnan(final_lowerband[-3]) and not np.isnan(final_lowerband[-4]) and not np.isnan(final_lowerband[-5]) and not np.isnan(final_lowerband[-6]) and (abs(final_lowerband[-3]-final_lowerband[-4])<0.001) and (abs(final_lowerband[-4]-final_lowerband[-5])<0.001) and (abs(final_lowerband[-5]-final_lowerband[-6])<0.001) and not np.isnan(final_upperband[-7])):
-				supertrend_signal="Buy"	
+		if intrval=="5hr_ExS" or intrval=="5hr_":
+			try:
+				five_hour_ALERT=self.HH(final_upperband, open, close, high) 
+			except:
+				five_hour_ALERT=False
+			
+			if five_hour_ALERT==True:
+					if intrval=="5hr_ExS":
+						supertrend_signal5="5H_ExS_ALERT"
+					elif intrval=="5hr_":
+						supertrend_signal5="5H_ALERT"
 			else:
-				supertrend_signal="Mixed"
-		except:
-			print('problems at line 370')
+				supertrend_signal5="no alert"
+
+
+
+		if intrval=="5hr_ExS" or intrval=="5hr_":
+			supertrend_signal=supertrend_signal5
+		else:
+			supertrend_signal=""
+			try:
+				if np.isnan(final_lowerband[-1]) and np.isnan(final_lowerband[-2]) and np.isnan(final_lowerband[-3])  and not np.isnan(final_lowerband[-4]) and not np.isnan(final_upperband[-1]) and not np.isnan(final_upperband[-2]) and not np.isnan(final_upperband[-3]) and np.isnan(final_upperband[-4]):
+					supertrend_signal="Sell"
+				elif (not np.isnan(final_upperband[-1]) and np.isnan(final_upperband[-2]) and not np.isnan(final_lowerband[-2])) or (not np.isnan(final_upperband[-2]) and np.isnan(final_upperband[-3]) and not np.isnan(final_lowerband[-3])) or (not np.isnan(final_upperband[-3]) and np.isnan(final_upperband[-4]) and not np.isnan(final_lowerband[-4])) or (not np.isnan(final_upperband[-3]) and not np.isnan(final_upperband[-4]) and (abs(final_upperband[-3]-final_upperband[-4])<0.001) and not np.isnan(final_lowerband[-5])) or (not np.isnan(final_upperband[-3]) and not np.isnan(final_upperband[-4]) and not np.isnan(final_upperband[-5]) and (abs(final_upperband[-3]-final_upperband[-4])<0.001) and (abs(final_upperband[-4]-final_upperband[-5])<0.001) and not np.isnan(final_lowerband[-6])) or (not np.isnan(final_upperband[-3]) and not np.isnan(final_upperband[-4]) and not np.isnan(final_upperband[-5]) and not np.isnan(final_upperband[-6]) and (abs(final_upperband[-3]-final_upperband[-4])<0.001) and (abs(final_upperband[-4]-final_upperband[-5])<0.001) and (abs(final_upperband[-5]-final_upperband[-6])<0.001) and not np.isnan(final_lowerband[-7])):
+					supertrend_signal="Sell"
+				elif intrval=="2d" and (not np.isnan(final_lowerband[-1]) and not np.isnan(final_lowerband[-2]) and np.isnan(final_lowerband[-3]) and not np.isnan(final_upperband[-3]) ) : 
+				#(not np.isnan(final_lowerband[-1]) and np.isnan(final_lowerband[-2]) and np.isnan(final_upperband[-1])) or
+				#not np.isnan(final_lowerband[-1]) and not np.isnan(final_lowerband[-2]) and not np.isnan(final_lowerband[-3]) and np.isnan(final_lowerband[-4]) and np.isnan(final_upperband[-1]) and np.isnan(final_upperband[-2]) and np.isnan(final_upperband[-3]) and not np.isnan(final_upperband[-4]):
+					supertrend_signal="Buy"
+				elif intrval=="1w" and (not np.isnan(final_lowerband[-1]) and np.isnan(final_lowerband[-2]) and np.isnan(final_upperband[-1])):
+				#or (not np.isnan(final_lowerband[-1]) and not np.isnan(final_lowerband[-2]) and np.isnan(final_lowerband[-3]) and not np.isnan(final_upperband[-3]) ) )
+					supertrend_signal="Buy"
+				# New buy logic for 1hr	
+				elif intrval=="1hr" and np.isnan(final_upperband[-1]) and np.isnan(final_upperband[-2]) and np.isnan(final_upperband[-3]) and not np.isnan(final_upperband[-4]) and not np.isnan(final_lowerband[-1]) and not np.isnan(final_lowerband[-2]) and not np.isnan(final_lowerband[-3]) and np.isnan(final_lowerband[-4]):
+					supertrend_signal="Buy"
+				elif intrval=="1hr" and (not np.isnan(final_lowerband[-1]) and np.isnan(final_lowerband[-2]) and not np.isnan(final_upperband[-2])) or (not np.isnan(final_lowerband[-2]) and np.isnan(final_lowerband[-3]) and not np.isnan(final_upperband[-3])) or (not np.isnan(final_lowerband[-3]) and np.isnan(final_lowerband[-4]) and not np.isnan(final_upperband[-4])) or (not np.isnan(final_lowerband[-3]) and not np.isnan(final_lowerband[-4]) and (abs(final_lowerband[-3]-final_lowerband[-4])<0.001) and not np.isnan(final_upperband[-5])) or (not np.isnan(final_lowerband[-3]) and not np.isnan(final_lowerband[-4]) and not np.isnan(final_lowerband[-5]) and (abs(final_lowerband[-3]-final_lowerband[-4])<0.001) and (abs(final_lowerband[-4]-final_lowerband[-5])<0.001) and not np.isnan(final_upperband[-6])) or (not np.isnan(final_lowerband[-3]) and not np.isnan(final_lowerband[-4]) and not np.isnan(final_lowerband[-5]) and not np.isnan(final_lowerband[-6]) and (abs(final_lowerband[-3]-final_lowerband[-4])<0.001) and (abs(final_lowerband[-4]-final_lowerband[-5])<0.001) and (abs(final_lowerband[-5]-final_lowerband[-6])<0.001) and not np.isnan(final_upperband[-7])):
+					supertrend_signal="Buy"	
+				else:
+					supertrend_signal="Mixed"
+			except:
+				print('problems at line 370')
 
 		return supertrend_signal
 
@@ -482,6 +510,37 @@ class StockStatusBot(object):
 			pass
 
 		return resistance_crossed
+
+
+	def HH(self,fin_upp, df_open, df_close, df_high):
+		nan_mask = fin_upp.isna()
+		nan_groups = nan_mask.diff().fillna(0).cumsum()
+		nan_groups = nan_groups[nan_mask]
+		five_hour_alert=False
+
+		if not nan_groups.empty:
+			last_group = nan_groups.groupby(nan_groups).last()
+			last_group_index = last_group.index[-1]
+			start_index = nan_groups[nan_groups == last_group_index].index[1] #because TradingView puts "My Long Entry" 1 bar after actual green Supertrend
+			diff=df_close[start_index:]-df_open[start_index:]
+			end_index=diff[diff < 0].index.min()
+
+		highest_high=max(df_high[start_index:end_index])
+		end_green=nan_groups[nan_groups == last_group_index].index[-1]
+		all_highs_of_green_curve=df_high[start_index:end_green]
+
+		if max(all_highs_of_green_curve)-highest_high>0:
+			if (all_highs_of_green_curve.idxmax()-start_index).days<2:
+				if (df_high.index[-1]-all_highs_of_green_curve.idxmax()).days<1:
+					#ALERT!!!
+					five_hour_alert=True
+			else:
+				five_hour_alert=False
+		else:
+			five_hour_alert=False
+
+		return five_hour_alert
+
 
 
 	def Supertrend2(self, some_symbol, intrval):
@@ -652,6 +711,8 @@ class StockStatusBot(object):
 		infolist3 = []
 		infolist4 = []
 		infolist5 = []
+		infolist_5H=[]
+		infolist_5HX=[]
 
 		docfile_list=[]
 		with open("tickers.txt", "r") as crossref_tickers:
@@ -693,6 +754,24 @@ class StockStatusBot(object):
 				signal_2d=self.Supertrend(stockSymbol,"2d")
 			except:
 				signal_2d=""
+
+			try:
+				signal_5hr=self.Supertrend(stockSymbol,"5hr_")
+			except:
+				signal_5hr=""	
+			try:
+				signal_5hr_exs=self.Supertrend(stockSymbol,"5hr_ExS")
+			except:
+				signal_5hr_exs=""
+
+			try:
+				if signal_5hr=="5H_ALERT":
+					infolist_5H.append(stockSymbol)
+				elif signal_5hr_exs=="5H_ExS_ALERT":
+					infolist_5HX.append(stockSymbol)
+			except:
+				pass
+
 
 			try:
 				if ( (stockSymbol.lower() in docfile_list) or (stockSymbol.upper() in docfile_list) ):	
@@ -853,6 +932,38 @@ class StockStatusBot(object):
 			
 			print('___exited if block2___')
 			
+			server.quit()
+
+		if infolist_5H!=[]:
+			infolist_5H=list(set(infolist_5H))
+			mail_content = "Stock Symbol\n"
+			for sym in infolist_5H:
+				mail_content += f"{sym}\n"
+			msg = EmailMessage()
+			msg.set_content(mail_content)
+			msg['Subject'] = '5H High (REGULAR hours) crossed for the following stocks'
+			msg['From'] = 'high.risk.stocks@gmail.com'
+			recipients = ['high.risk.stocks@gmail.com', 'mike@mihfinancial.ca']
+			msg['To'] = ", ".join(recipients)
+			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+			server.login("high.risk.stocks@gmail.com", "yedjzfcocljxmcxj")
+			server.send_message(msg)
+			server.quit()
+
+		if infolist_5HX!=[]:
+			infolist_5HX=list(set(infolist_5HX))
+			mail_content = "Stock Symbol\n"
+			for sym in infolist_5HX:
+				mail_content += f"{sym}\n"
+			msg = EmailMessage()
+			msg.set_content(mail_content)
+			msg['Subject'] = '5H High (EXTENDED hours) crossed for the following stocks'
+			msg['From'] = 'high.risk.stocks@gmail.com'
+			recipients = ['high.risk.stocks@gmail.com', 'mike@mihfinancial.ca']
+			msg['To'] = ", ".join(recipients)
+			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+			server.login("high.risk.stocks@gmail.com", "yedjzfcocljxmcxj")
+			server.send_message(msg)
 			server.quit()
 
 		print("=======")
