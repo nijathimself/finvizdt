@@ -748,7 +748,7 @@ class StockStatusBot(object):
 			msg['To'] = ", ".join(recipients)
 			# Send the message via our own SMTP server.
 			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-			server.login("high.risk.stocks@gmail.com", "yedjzfcocljxmcxj")
+			server.login("high.risk.stocks@gmail.com", "qhyhtfschqvsbwla")
 			print("SUCCESS at log into high.risk.stocks")
 			server.send_message(msg)
 			
@@ -771,7 +771,7 @@ class StockStatusBot(object):
 			msg['To'] = ", ".join(recipients)
 			# Send the message via our own SMTP server.
 			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-			server.login("high.risk.stocks@gmail.com", "yedjzfcocljxmcxj")
+			server.login("high.risk.stocks@gmail.com", "qhyhtfschqvsbwla")
 			print("SUCCESS2 at log into high.risk.stocks")
 			server.send_message(msg)
 			
@@ -799,7 +799,7 @@ class StockStatusBot(object):
 			msg['To'] = ", ".join(recipients)
 			# Send the message via our own SMTP server.
 			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-			server.login("high.risk.stocks@gmail.com", "yedjzfcocljxmcxj")
+			server.login("high.risk.stocks@gmail.com", "qhyhtfschqvsbwla")
 			print("SUCCESS3 at log into high.risk.stocks")
 			server.send_message(msg)
 			
@@ -823,7 +823,7 @@ class StockStatusBot(object):
 			msg['To'] = ", ".join(recipients)
 			# Send the message via our own SMTP server.
 			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-			server.login("high.risk.stocks@gmail.com", "yedjzfcocljxmcxj")
+			server.login("high.risk.stocks@gmail.com", "qhyhtfschqvsbwla")
 			print("SUCCESS4 at log into high.risk.stocks")
 			server.send_message(msg)
 			
@@ -847,7 +847,7 @@ class StockStatusBot(object):
 			msg['To'] = ", ".join(recipients)
 			# Send the message via our own SMTP server.
 			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-			server.login("high.risk.stocks@gmail.com", "yedjzfcocljxmcxj")
+			server.login("high.risk.stocks@gmail.com", "qhyhtfschqvsbwla")
 			print("SUCCESS5 at log into high.risk.stocks")
 			server.send_message(msg)
 			
