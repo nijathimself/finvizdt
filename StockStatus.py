@@ -529,14 +529,18 @@ class StockStatusBot(object):
 		end_green=nan_groups[nan_groups == last_group_index].index[-1]
 		all_highs_of_green_curve=df_high[start_index:end_green]
 
-		if max(all_highs_of_green_curve)-highest_high>0:
-			if (all_highs_of_green_curve.idxmax()-start_index).days<2:
-				if (df_high.index[-1]-all_highs_of_green_curve.idxmax()).days<1:
-					#ALERT!!!
-					five_hour_alert=True
+		try:
+			if np.isnan(fin_upp[-1]) and np.isnan(fin_upp[-2]):
+				if max(all_highs_of_green_curve)-highest_high>0:
+					if (all_highs_of_green_curve.idxmax()-start_index).days<5:
+						if (df_high.index[-1]-all_highs_of_green_curve.idxmax()).days<1:
+								#ALERT!!!
+								five_hour_alert=True
+						else:
+							five_hour_alert=False
 			else:
 				five_hour_alert=False
-		else:
+		except:
 			five_hour_alert=False
 
 		return five_hour_alert
