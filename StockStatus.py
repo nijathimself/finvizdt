@@ -536,6 +536,7 @@ class StockStatusBot(object):
 						if (df_high.index[-1]-all_highs_of_green_curve.idxmax()).days<1:
 								#ALERT!!!
 								five_hour_alert=True
+								print("ALERT	ON 5-HOUR CHART!!!!!"
 						else:
 							five_hour_alert=False
 			else:
@@ -950,7 +951,7 @@ class StockStatusBot(object):
 			recipients = ['high.risk.stocks@gmail.com', 'mike@mihfinancial.ca']
 			msg['To'] = ", ".join(recipients)
 			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-			server.login("high.risk.stocks@gmail.com", "yedjzfcocljxmcxj")
+			server.login("high.risk.stocks@gmail.com", "qhyhtfschqvsbwla")
 			server.send_message(msg)
 			server.quit()
 
@@ -966,7 +967,7 @@ class StockStatusBot(object):
 			recipients = ['high.risk.stocks@gmail.com', 'mike@mihfinancial.ca']
 			msg['To'] = ", ".join(recipients)
 			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
-			server.login("high.risk.stocks@gmail.com", "yedjzfcocljxmcxj")
+			server.login("high.risk.stocks@gmail.com", "qhyhtfschqvsbwla")
 			server.send_message(msg)
 			server.quit()
 
