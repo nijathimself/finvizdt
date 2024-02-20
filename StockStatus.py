@@ -536,7 +536,7 @@ class StockStatusBot(object):
 						if (df_high.index[-1]-all_highs_of_green_curve.idxmax()).days<1:
 								#ALERT!!!
 								five_hour_alert=True
-								print("ALERT	ON 5-HOUR CHART!!!!!"
+								print("ALERT	ON 5-HOUR CHART!!!!!")
 						else:
 							five_hour_alert=False
 			else:
