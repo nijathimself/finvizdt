@@ -567,8 +567,8 @@ class StockStatusBot(object):
 		try:
 			if np.isnan(fin_upp[-1]) and np.isnan(fin_upp[-2]):
 				if max(all_highs_of_green_curve)-highest_high>0:
-					if (all_highs_of_green_curve.idxmax()-start_index).days<5:
-						if (df_high.index[-1]-all_highs_of_green_curve.idxmax()).days<1:
+					if (all_highs_of_green_curve.idxmax()-start_index).days<=5:
+						if (df_high.index[-1]-all_highs_of_green_curve.idxmax()).days<=5:
 								#ALERT!!!
 								five_hour_alert=True
 								print("ALERT	ON 5-HOUR CHART!!!!!")
