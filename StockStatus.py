@@ -441,6 +441,11 @@ class StockStatusBot(object):
 		
 		if intrval=="5hr_ExS" or intrval=="5hr_":
 			try:
+				print(df_new.iloc[0,:])
+			except:
+				print('NO DF')
+			
+			try:
 				five_hour_ALERT=self.HH(final_upperband, open, close, high) 
 			except:
 				five_hour_ALERT=False
