@@ -254,6 +254,20 @@ class StockStatusBot(object):
 		df_final=df_final.iloc[2:,:]
 		return df_final
 
+	def round_time(self, dt):
+		hour = dt.hour
+		if hour < 1:
+			return dt.replace(hour=1, minute=0, second=0, microsecond=0)
+		elif hour < 6:
+			return dt.replace(hour=1, minute=0, second=0, microsecond=0)
+		elif hour < 11:
+			return dt.replace(hour=6, minute=0, second=0, microsecond=0)
+		elif hour < 16:
+			return dt.replace(hour=11, minute=0, second=0, microsecond=0)
+		else:
+			return dt.replace(hour=16, minute=0, second=0, microsecond=0)
+
+
 	def ST(self, df): #df is the dataframe, n is the period, f is the factor; f=3, n=7 are commonly used.
 		#Calculation of ATR
 		f=3
@@ -349,9 +363,6 @@ class StockStatusBot(object):
 			x5H=madeupintervalobj('5H')
 			df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=500, extended_session=False)
 
-		
-		
-
 		try:
 			high = df['high']
 			low = df['low']
@@ -359,7 +370,10 @@ class StockStatusBot(object):
 			open = df['open']
 		except:
 			try:
-				prefix=tv.search_symbol(some_symbol)[0]['prefix']
+				try:
+					prefix=tv.search_symbol(some_symbol)[0]['prefix']
+				except:
+					pass
 				if intrval=="1hr":
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_1_hour, n_bars=300, extended_session=True)
 				elif intrval=="4hr":
@@ -380,11 +394,32 @@ class StockStatusBot(object):
 					x5H=madeupintervalobj('5H')
 					df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=500, extended_session=True)
 
-
-				high = df['high']
-				low = df['low']
-				close = df['close']
-				open = df['open']
+				try:
+					high = df['high']
+					low = df['low']
+					close = df['close']
+					open = df['open']
+				except:
+					if intrval=="5hr_":
+						df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_5_minute, n_bars=1500, extended_session=False)
+						df['rounded_time'] = df.index.map(self.round_time)
+						df = df.groupby('rounded_time').agg({
+							'open': 'first',
+							'high': 'max',
+							'low': 'min',
+							'close': 'last'
+						})
+					elif intrval=="5hr_ExS":
+						df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_5_minute, n_bars=1500, extended_session=True)
+						df['rounded_time'] = df.index.map(self.round_time)
+						df = df.groupby('rounded_time').agg({
+							'open': 'first',
+							'high': 'max',
+							'low': 'min',
+							'close': 'last'
+						})
+					else:
+						pass
 			except:
 				pass
 		
