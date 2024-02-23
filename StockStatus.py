@@ -403,6 +403,10 @@ class StockStatusBot(object):
 					if intrval=="5hr_":
 						df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_5_minute, n_bars=1500, extended_session=False)
 						time.sleep(5)
+						try:
+							print(df.iloc[0,0])
+						except:
+							print('NO DF')
 						df['rounded_time'] = df.index.map(self.round_time)
 						df = df.groupby('rounded_time').agg({
 							'open': 'first',
@@ -413,6 +417,10 @@ class StockStatusBot(object):
 					elif intrval=="5hr_ExS":
 						df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_5_minute, n_bars=1500, extended_session=True)
 						time.sleep(5)
+						try:
+							print(df.iloc[0,0])
+						except:
+							print('NO DF')
 						df['rounded_time'] = df.index.map(self.round_time)
 						df = df.groupby('rounded_time').agg({
 							'open': 'first',
