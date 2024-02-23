@@ -401,7 +401,7 @@ class StockStatusBot(object):
 					open = df['open']
 				except:
 					if intrval=="5hr_":
-						df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_5_minute, n_bars=1500, extended_session=False)
+						df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_5_minute, n_bars=1500, extended_session=False)
 						df['rounded_time'] = df.index.map(self.round_time)
 						df = df.groupby('rounded_time').agg({
 							'open': 'first',
@@ -410,7 +410,7 @@ class StockStatusBot(object):
 							'close': 'last'
 						})
 					elif intrval=="5hr_ExS":
-						df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_5_minute, n_bars=1500, extended_session=True)
+						df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_5_minute, n_bars=1500, extended_session=True)
 						df['rounded_time'] = df.index.map(self.round_time)
 						df = df.groupby('rounded_time').agg({
 							'open': 'first',
