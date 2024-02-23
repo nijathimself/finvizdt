@@ -441,6 +441,11 @@ class StockStatusBot(object):
 							print('NO DF')
 					else:
 						pass
+
+					high = df['high']
+					low = df['low']
+					close = df['close']
+					open = df['open']
 			except:
 				pass
 		
@@ -580,7 +585,7 @@ class StockStatusBot(object):
 		nan_groups = nan_mask.diff().fillna(0).cumsum()
 		nan_groups = nan_groups[nan_mask]
 		five_hour_alert=False
-		
+
 		if not nan_groups.empty:
 			last_group = nan_groups.groupby(nan_groups).last()
 			last_group_index = last_group.index[-1]
