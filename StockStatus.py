@@ -363,6 +363,7 @@ class StockStatusBot(object):
 			x5H=madeupintervalobj('5H')
 			df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=500, extended_session=False)
 
+
 		try:
 			high = df['high']
 			low = df['low']
