@@ -165,6 +165,7 @@ class StockStatusBot(object):
 						if obj2!=[]:
 							for i in range(len(obj2)):
 								self.stockSymbolList.append(obj2[i])
+			self.stockSymbolList=list(set(self.stockSymbolList))
 			mail.store(mail_ids.decode('utf-8').replace(' ',','),'+FLAGS','\Seen')
 			print('All ticks are copied')
 			print(self.stockSymbolList)
