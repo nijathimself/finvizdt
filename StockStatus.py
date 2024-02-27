@@ -605,6 +605,8 @@ class StockStatusBot(object):
 					print("print2")
 					if (all_highs_of_green_curve.idxmax()-start_index).days<=7:
 						print("print3")
+						print(all_highs_of_green_curve.idxmax())
+						print(start_index)
 						if (df_high.index[-1]-all_highs_of_green_curve.idxmax()).days<=5:
 								#ALERT!!!
 								five_hour_alert=True
