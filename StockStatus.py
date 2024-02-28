@@ -461,7 +461,6 @@ class StockStatusBot(object):
 				print(df_new[1][2])
 			except:
 				print('NO DF')
-			
 			try:
 				five_hour_ALERT=self.HH(final_upperband, open, close, high)
 				print('5H ALERT for this one is', five_hour_ALERT) 
