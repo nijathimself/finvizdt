@@ -450,7 +450,6 @@ class StockStatusBot(object):
 			except:
 				pass
 		
-
 		df_new=self.ST(df)
 		final_lowerband=df_new[0]
 		final_upperband=df_new[1]
