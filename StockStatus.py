@@ -455,26 +455,33 @@ class StockStatusBot(object):
 		final_lowerband=df_new[0]
 		final_upperband=df_new[1]
 		
-		if intrval=="5hr_ExS" or intrval=="5hr_":
-			try:
-				print(df_new[0][2])
-				print(df_new[1][2])
-			except:
-				print('NO DF')
-			try:
-				five_hour_ALERT=self.HH(final_upperband, open, close, high)
-				print('5H ALERT for this one is', five_hour_ALERT) 
-			except:
-				five_hour_ALERT=False
-			
-			if five_hour_ALERT==True:
-					if intrval=="5hr_ExS":
-						supertrend_signal5="5H_ExS_ALERT"
-					elif intrval=="5hr_":
-						supertrend_signal5="5H_ALERT"
+		try:
+			check1=final_lowerband.notnull()
+			check2=final_upperband.isnull()
+			if set(check1)==set(check2):
+				if intrval=="5hr_ExS" or intrval=="5hr_":
+					try:
+						print(df_new[0][2])
+						print(df_new[1][2])
+					except:
+						print('NO DF')
+					try:
+						five_hour_ALERT=self.HH(final_upperband, open, close, high)
+						print('5H ALERT for this one is', five_hour_ALERT) 
+					except:
+						five_hour_ALERT=False
+					
+					if five_hour_ALERT==True:
+							if intrval=="5hr_ExS":
+								supertrend_signal5="5H_ExS_ALERT"
+							elif intrval=="5hr_":
+								supertrend_signal5="5H_ALERT"
+					else:
+						supertrend_signal5="no alert"
 			else:
 				supertrend_signal5="no alert"
-
+		except:
+			supertrend_signal5="no alert"
 
 
 		if intrval=="5hr_ExS" or intrval=="5hr_":
@@ -598,21 +605,14 @@ class StockStatusBot(object):
 		all_highs_of_green_curve=df_high[start_index:end_green]
 
 		try:
-			if np.isnan(fin_upp[-1]) and np.isnan(fin_upp[-2]):
-				print("print1")
-				if max(all_highs_of_green_curve)-highest_high>0:
-					print("print2")
-					if (all_highs_of_green_curve.idxmax()-start_index).days<=7:
-						print("print3")
-						print(all_highs_of_green_curve.idxmax())
-						print(start_index)
-						if (df_high.index[-1]-all_highs_of_green_curve.idxmax()).days<=5:
-								#ALERT!!!
-								five_hour_alert=True
-								print("ALERT	ON 5-HOUR CHART!!!!!")
-						else:
-							print("printElse")
-							five_hour_alert=False
+			if (np.isnan(fin_upp[-1]) and np.isnan(fin_upp[-2])) and (max(all_highs_of_green_curve)-highest_high>0) and ((all_highs_of_green_curve.idxmax()-start_index).days<=7) and ((df_high.index[-1]-all_highs_of_green_curve.idxmax()).days<=5):
+				print("print3")
+				print(all_highs_of_green_curve.idxmax())
+				print(start_index)
+
+				#ALERT!!!
+				five_hour_alert=True
+				print("ALERT	ON 5-HOUR CHART!!!!!")
 			else:
 				five_hour_alert=False
 				print('5H Alert is calculated and is', five_hour_alert)
