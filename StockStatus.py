@@ -608,7 +608,6 @@ class StockStatusBot(object):
 				print("print3")
 				print(all_highs_of_green_curve.idxmax())
 				print(start_index)
-
 				#ALERT!!!
 				five_hour_alert=True
 				print("ALERT	ON 5-HOUR CHART!!!!!")
