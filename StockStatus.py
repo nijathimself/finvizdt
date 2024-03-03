@@ -257,17 +257,23 @@ class StockStatusBot(object):
 
 	def round_time(self, dt):
 		hour = dt.hour
-		if hour < 1:
+		minute = dt.minute
+		if ((hour > 1) or ((hour==1) and minute >= 0)) and ((hour < 6)):
 			return dt.replace(hour=1, minute=0, second=0, microsecond=0)
-		elif hour < 6:
-			return dt.replace(hour=1, minute=0, second=0, microsecond=0)
-		elif hour < 11:
+		elif ((hour > 6) or ((hour==6) and minute >= 0)) and ((hour < 11)):
 			return dt.replace(hour=6, minute=0, second=0, microsecond=0)
-		elif hour < 16:
+		elif ((hour > 11) or ((hour==11) and minute >= 0)) and ((hour < 16)):
 			return dt.replace(hour=11, minute=0, second=0, microsecond=0)
 		else:
 			return dt.replace(hour=16, minute=0, second=0, microsecond=0)
 
+	def round_time2(self, dt):
+		hour = dt.hour
+		minute = dt.minute
+		if ((hour > 6) or ((hour==6) and minute >= 30)) and ((hour < 11) or ((hour==11) and minute < 30) ):
+			return dt.replace(hour=6, minute=30)
+		else:
+			return dt.replace(hour=11, minute=30)
 
 	def ST(self, df): #df is the dataframe, n is the period, f is the factor; f=3, n=7 are commonly used.
 		#Calculation of ATR
@@ -404,13 +410,13 @@ class StockStatusBot(object):
 				except:
 					if intrval=="5hr_":
 						try:
-							df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_5_minute, n_bars=1500, extended_session=False)
+							df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_5_minute, n_bars=2500, extended_session=False)
 							time.sleep(5)
 							print(df.iloc[0,0])
 						except:
-							df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_5_minute, n_bars=1500, extended_session=False)
+							df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_5_minute, n_bars=2500, extended_session=False)
 						
-						df['rounded_time'] = df.index.map(self.round_time)
+						df['rounded_time'] = df.index.map(self.round_time2)
 						df = df.groupby('rounded_time').agg({
 							'open': 'first',
 							'high': 'max',
@@ -423,11 +429,11 @@ class StockStatusBot(object):
 							print('NO DF')
 					elif intrval=="5hr_ExS":
 						try:
-							df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_5_minute, n_bars=1500, extended_session=True)
+							df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_5_minute, n_bars=2500, extended_session=True)
 							time.sleep(5)
 							print(df.iloc[0,0])
 						except:
-							df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_5_minute, n_bars=1500, extended_session=True)
+							df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_5_minute, n_bars=2500, extended_session=True)
 						
 						df['rounded_time'] = df.index.map(self.round_time)
 						df = df.groupby('rounded_time').agg({
