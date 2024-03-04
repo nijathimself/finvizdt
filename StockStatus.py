@@ -365,10 +365,10 @@ class StockStatusBot(object):
 			df=tv.get_hist(some_symbol, exchange=exch, interval = x10W, n_bars=500, extended_session=False)
 		elif intrval=="5hr_ExS":
 			x5H=madeupintervalobj('5H')
-			df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=500, extended_session=True)
+			df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=1000, extended_session=True)
 		elif intrval=="5hr_":
 			x5H=madeupintervalobj('5H')
-			df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=500, extended_session=False)
+			df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=1000, extended_session=False)
 
 
 		try:
@@ -397,10 +397,10 @@ class StockStatusBot(object):
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = x10W, n_bars=500, extended_session=False)
 				elif intrval=="5hr_":
 					x5H=madeupintervalobj('5H')
-					df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=500, extended_session=False)
+					df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=1000, extended_session=False)
 				elif intrval=="5hr_ExS":
 					x5H=madeupintervalobj('5H')
-					df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=500, extended_session=True)
+					df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=1000, extended_session=True)
 
 				try:
 					high = df['high']
@@ -409,12 +409,9 @@ class StockStatusBot(object):
 					open = df['open']
 				except:
 					if intrval=="5hr_":
-						try:
-							df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_5_minute, n_bars=2500, extended_session=False)
-							time.sleep(5)
-							print(df.iloc[0,0])
-						except:
-							df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_5_minute, n_bars=2500, extended_session=False)
+						df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_5_minute, n_bars=2500, extended_session=False)
+						time.sleep(5)
+						print(df.iloc[0,0])
 						
 						df['rounded_time'] = df.index.map(self.round_time2)
 						df = df.groupby('rounded_time').agg({
@@ -428,12 +425,9 @@ class StockStatusBot(object):
 						except:
 							print('NO DF')
 					elif intrval=="5hr_ExS":
-						try:
-							df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_5_minute, n_bars=2500, extended_session=True)
-							time.sleep(5)
-							print(df.iloc[0,0])
-						except:
-							df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_5_minute, n_bars=2500, extended_session=True)
+						df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_5_minute, n_bars=2500, extended_session=True)
+						time.sleep(5)
+						print(df.iloc[0,0])
 						
 						df['rounded_time'] = df.index.map(self.round_time)
 						df = df.groupby('rounded_time').agg({
@@ -845,6 +839,7 @@ class StockStatusBot(object):
 				signal_5hr=""	
 			try:
 				signal_5hr_exs=self.Supertrend(stockSymbol,"5hr_ExS")
+				print("line848",signal_5hr_exs)
 			except:
 				signal_5hr_exs=""
 
@@ -852,6 +847,7 @@ class StockStatusBot(object):
 				if signal_5hr=="5H_ALERT":
 					infolist_5H.append(stockSymbol)
 				elif signal_5hr_exs=="5H_ExS_ALERT":
+					print("line855")
 					infolist_5HX.append(stockSymbol)
 			except:
 				pass
