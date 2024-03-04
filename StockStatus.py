@@ -453,6 +453,7 @@ class StockStatusBot(object):
 		df_new=self.ST(df)
 		final_lowerband=df_new[0]
 		final_upperband=df_new[1]
+		print(final_lowerband.iloc[-45:])
 		
 		try:
 			check1=final_lowerband.notnull()
@@ -604,13 +605,18 @@ class StockStatusBot(object):
 		all_highs_of_green_curve=df_high[start_index:end_green]
 
 		try:
-			if (np.isnan(fin_upp[-1]) and np.isnan(fin_upp[-2])) and (max(all_highs_of_green_curve)-highest_high>0) and ((all_highs_of_green_curve.idxmax()-start_index).days<=7) and ((df_high.index[-1]-all_highs_of_green_curve.idxmax()).days<=5):
-				print("print3")
-				print(all_highs_of_green_curve.idxmax())
-				print(start_index)
-				#ALERT!!!
-				five_hour_alert=True
-				print("ALERT	ON 5-HOUR CHART!!!!!")
+			if (np.isnan(fin_upp[-1]) and np.isnan(fin_upp[-2])):
+				print("1111")
+				if(max(all_highs_of_green_curve)-highest_high>0):
+					print("2222")
+					if ((all_highs_of_green_curve.idxmax()-start_index).days<=7):
+						if ((df_high.index[-1]-all_highs_of_green_curve.idxmax()).days<=5):
+							print("print3")
+							print(all_highs_of_green_curve.idxmax())
+							print(start_index)
+							#ALERT!!!
+							five_hour_alert=True
+							print("ALERT	ON 5-HOUR CHART!!!!!")
 			else:
 				five_hour_alert=False
 				print('5H Alert is calculated and is', five_hour_alert)
