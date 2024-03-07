@@ -401,10 +401,10 @@ class StockStatusBot(object):
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = x10W, n_bars=500, extended_session=False)
 				elif intrval=="5hr_":
 					x5H=madeupintervalobj('5H')
-					df=tv.get_hist(some_symbol, exchange=prefix, interval = x5H, n_bars=1000, extended_session=False)
+					df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=1000, extended_session=False)
 				elif intrval=="5hr_ExS":
 					x5H=madeupintervalobj('5H')
-					df=tv.get_hist(some_symbol, exchange=prefix, interval = x5H, n_bars=1000, extended_session=True)
+					df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=1000, extended_session=True)
 				elif intrval=="3hr_":
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_3_hour, n_bars=1000, extended_session=False)
 				elif intrval=="3hr_ExS":
