@@ -369,6 +369,10 @@ class StockStatusBot(object):
 		elif intrval=="5hr_":
 			x5H=madeupintervalobj('5H')
 			df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=1000, extended_session=False)
+		elif intrval=="3hr_":
+			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_3_hour, n_bars=1000, extended_session=False)
+		elif intrval=="3hr_ExS":
+			df=tv.get_hist(some_symbol, exchange=exch, interval = Interval.in_3_hour, n_bars=1000, extended_session=True)
 
 
 		try:
@@ -397,10 +401,14 @@ class StockStatusBot(object):
 					df=tv.get_hist(some_symbol, exchange=prefix, interval = x10W, n_bars=500, extended_session=False)
 				elif intrval=="5hr_":
 					x5H=madeupintervalobj('5H')
-					df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=1000, extended_session=False)
+					df=tv.get_hist(some_symbol, exchange=prefix, interval = x5H, n_bars=1000, extended_session=False)
 				elif intrval=="5hr_ExS":
 					x5H=madeupintervalobj('5H')
-					df=tv.get_hist(some_symbol, exchange=exch, interval = x5H, n_bars=1000, extended_session=True)
+					df=tv.get_hist(some_symbol, exchange=prefix, interval = x5H, n_bars=1000, extended_session=True)
+				elif intrval=="3hr_":
+					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_3_hour, n_bars=1000, extended_session=False)
+				elif intrval=="3hr_ExS":
+					df=tv.get_hist(some_symbol, exchange=prefix, interval = Interval.in_3_hour, n_bars=1000, extended_session=True)
 
 				try:
 					high = df['high']
@@ -453,13 +461,13 @@ class StockStatusBot(object):
 		df_new=self.ST(df)
 		final_lowerband=df_new[0]
 		final_upperband=df_new[1]
-		print(final_lowerband.iloc[-45:])
+		#print(final_lowerband.iloc[-45:])
 		
 		try:
 			check1=final_lowerband.notnull()
 			check2=final_upperband.isnull()
 			if set(check1)==set(check2):
-				if intrval=="5hr_ExS" or intrval=="5hr_":
+				if intrval=="5hr_ExS" or intrval=="5hr_" or intrval=="3hr_ExS" or intrval=="3hr_":
 					try:
 						print(df_new[0][2])
 						print(df_new[1][2])
@@ -476,6 +484,10 @@ class StockStatusBot(object):
 								supertrend_signal5="5H_ExS_ALERT"
 							elif intrval=="5hr_":
 								supertrend_signal5="5H_ALERT"
+							elif intrval=="3hr_":
+								supertrend_signal5="3H_ALERT"
+							elif intrval=="3hr_ExS":
+								supertrend_signal5="3H_ExS_ALERT"
 					else:
 						supertrend_signal5="no alert"
 			else:
@@ -484,7 +496,7 @@ class StockStatusBot(object):
 			supertrend_signal5="no alert"
 
 
-		if intrval=="5hr_ExS" or intrval=="5hr_":
+		if intrval=="5hr_ExS" or intrval=="5hr_" or intrval=="3hr_ExS" or intrval=="3hr_":
 			supertrend_signal=supertrend_signal5
 		else:
 			supertrend_signal=""
@@ -798,6 +810,8 @@ class StockStatusBot(object):
 		infolist5 = []
 		infolist_5H=[]
 		infolist_5HX=[]
+		infolist_3H=[]
+		infolist_3HX=[]
 
 		docfile_list=[]
 		with open("tickers.txt", "r") as crossref_tickers:
@@ -848,6 +862,15 @@ class StockStatusBot(object):
 				print("line848",signal_5hr_exs)
 			except:
 				signal_5hr_exs=""
+			try:
+				signal_3hr=self.Supertrend(stockSymbol,"3hr_")
+			except:
+				signal_3hr=""
+			try:
+				signal_3hr_exs=self.Supertrend(stockSymbol,"3hr_ExS")
+				print("line848",signal_3hr_exs)
+			except:
+				signal_3hr_exs=""
 
 			try:
 				if signal_5hr=="5H_ALERT":
@@ -855,6 +878,15 @@ class StockStatusBot(object):
 				elif signal_5hr_exs=="5H_ExS_ALERT":
 					print("line855")
 					infolist_5HX.append(stockSymbol)
+			except:
+				pass
+
+			try:
+				if signal_3hr=="3H_ALERT":
+					infolist_3H.append(stockSymbol)
+				elif signal_3hr_exs=="3H_ExS_ALERT":
+					print("line855")
+					infolist_3HX.append(stockSymbol)
 			except:
 				pass
 
@@ -1044,6 +1076,38 @@ class StockStatusBot(object):
 			msg = EmailMessage()
 			msg.set_content(mail_content)
 			msg['Subject'] = '5H High (EXTENDED hours) crossed for the following stocks'
+			msg['From'] = 'high.risk.stocks@gmail.com'
+			recipients = ['high.risk.stocks@gmail.com', 'mike@mihfinancial.ca']
+			msg['To'] = ", ".join(recipients)
+			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+			server.login("high.risk.stocks@gmail.com", "qhyhtfschqvsbwla")
+			server.send_message(msg)
+			server.quit()
+
+		if infolist_3H!=[]:
+			infolist_3H=list(set(infolist_3H))
+			mail_content = "Stock Symbol\n"
+			for sym in infolist_3H:
+				mail_content += f"{sym}\n"
+			msg = EmailMessage()
+			msg.set_content(mail_content)
+			msg['Subject'] = '3H High (REGULAR hours) crossed for the following stocks'
+			msg['From'] = 'high.risk.stocks@gmail.com'
+			recipients = ['high.risk.stocks@gmail.com', 'mike@mihfinancial.ca']
+			msg['To'] = ", ".join(recipients)
+			server = smtplib.SMTP_SSL('smtp.gmail.com', 465)
+			server.login("high.risk.stocks@gmail.com", "qhyhtfschqvsbwla")
+			server.send_message(msg)
+			server.quit()
+
+		if infolist_3HX!=[]:
+			infolist_3HX=list(set(infolist_3HX))
+			mail_content = "Stock Symbol\n"
+			for sym in infolist_3HX:
+				mail_content += f"{sym}\n"
+			msg = EmailMessage()
+			msg.set_content(mail_content)
+			msg['Subject'] = '3H High (EXTENDED hours) crossed for the following stocks'
 			msg['From'] = 'high.risk.stocks@gmail.com'
 			recipients = ['high.risk.stocks@gmail.com', 'mike@mihfinancial.ca']
 			msg['To'] = ", ".join(recipients)
