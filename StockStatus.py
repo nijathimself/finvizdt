@@ -875,7 +875,7 @@ class StockStatusBot(object):
 			try:
 				if signal_5hr=="5H_ALERT":
 					infolist_5H.append(stockSymbol)
-				elif signal_5hr_exs=="5H_ExS_ALERT":
+				if signal_5hr_exs=="5H_ExS_ALERT":
 					print("line855")
 					infolist_5HX.append(stockSymbol)
 			except:
@@ -884,7 +884,7 @@ class StockStatusBot(object):
 			try:
 				if signal_3hr=="3H_ALERT":
 					infolist_3H.append(stockSymbol)
-				elif signal_3hr_exs=="3H_ExS_ALERT":
+				if signal_3hr_exs=="3H_ExS_ALERT":
 					print("line855")
 					infolist_3HX.append(stockSymbol)
 			except:
