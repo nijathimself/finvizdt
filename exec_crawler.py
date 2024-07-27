@@ -18,4 +18,4 @@ def setup_periodic_tasks(sender, **kwargs):
 
 @app.task
 def run_crawler():
-    #bet = StockStatusBot(Config())
+    bet = StockStatusBot(Config())
