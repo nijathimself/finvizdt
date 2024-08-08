@@ -16,6 +16,7 @@ def setup_periodic_tasks(sender, **kwargs):
     """
     sender.add_periodic_task(crontab(minute='*/60'), run_crawler.s(), name='call every first minute of every hour')
 
+
 @app.task
 def run_crawler():
     bet = StockStatusBot(Config())
