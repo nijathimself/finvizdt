@@ -1,5 +1,5 @@
 from config import Config
-#from StockStatus import StockStatusBot
+from StockStatus import StockStatusBot
 from celery import Celery
 from celery.schedules import crontab
 import os
